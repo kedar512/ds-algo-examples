@@ -3,12 +3,12 @@ package com.ds.impl;
 import com.ds.exception.StackEmptyException;
 import com.ds.exception.StackNotInitializedException;
 
-public class MyStack {
+public class MyArrayStack {
 	
 	private Object[] arr;
 	private int topOfStack = -1;
 	
-	public MyStack(int size) {
+	public MyArrayStack(int size) {
 		arr = new Object[size];
 	}
 	
@@ -40,15 +40,16 @@ public class MyStack {
 		}
 	}
 	
-	public boolean pop() {
+	public Object pop() {
 		if (null == arr) {
 			throw new StackNotInitializedException("Stack is deleted");
 		} else if (isEmpty()) {
 			throw new StackEmptyException("Stack is empty");
 		} else {
+			Object temp = arr[topOfStack];
 			arr[topOfStack] = null;
 			topOfStack--;
-			return true;
+			return temp;
 		}
 	}
 	

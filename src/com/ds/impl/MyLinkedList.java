@@ -1,12 +1,78 @@
 package com.ds.impl;
 
+import com.ds.exception.LinkedListNotInitializedException;
+
 public class MyLinkedList<E> {
 	
-	private Node head;
-	private Node tail;
+	private MyLinkedList<E> head;
+	private MyLinkedList<E> tail;
+	private E data;
 	private int size;
-	private Node node;
+	private MyLinkedList<E> next;
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + ((head == null) ? 0 : head.hashCode());
+		result = prime * result + ((next == null) ? 0 : next.hashCode());
+		result = prime * result + size;
+		result = prime * result + ((tail == null) ? 0 : tail.hashCode());
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MyLinkedList<E> other = (MyLinkedList<E>) obj;
+		if (data == null) {
+			if (other.data != null)
+				return false;
+		} else if (!data.equals(other.data))
+			return false;
+		if (head == null) {
+			if (other.head != null)
+				return false;
+		} else if (!head.equals(other.head))
+			return false;
+		if (next == null) {
+			if (other.next != null)
+				return false;
+		} else if (!next.equals(other.next))
+			return false;
+		if (size != other.size)
+			return false;
+		if (tail == null) {
+			if (other.tail != null)
+				return false;
+		} else if (!tail.equals(other.tail))
+			return false;
+		return true;
+	}
+
+	public MyLinkedList<E> getNext() {
+		return next;
+	}
+
+	public void setNext(MyLinkedList<E> next) {
+		this.next = next;
+	}
+
+	public E getData() {
+		return data;
+	}
+
+	public void setData(E data) {
+		this.data = data;
+	}
+
 	public int getSize() {
 		return size;
 	}
@@ -15,23 +81,118 @@ public class MyLinkedList<E> {
 		this.size = size;
 	}
 
-	public boolean add(E e) {
+	public boolean add(E e, int position) {
 		if (null == head) {
-			head = new Node(e);
+			head = new MyLinkedList<>();
+			head.setData(e);
 			tail = head;
 			setSize(this.size + 1);
-		} else {
-			Node newNode = new Node(e);
-			node = head;
-			while(null != node.getNext()) {
-				if (null == node.getNext()) {
-					node.setNext(newNode);
-					tail = newNode;
-					setSize(this.size + 1);
-					break;
-				}
+		} else if (position <= 0) {
+			MyLinkedList<E> node = new MyLinkedList<>();
+			node.setData(e);
+			
+			if (1 == getSize()) {
+				MyLinkedList<E> tempNode = head;
+				head = node;
+				head.setNext(tempNode);
+				tail = head.getNext();
+			} else {
+				MyLinkedList<E> tempNode = head;
+				head = node;
+				head.setNext(tempNode);
 			}
+			setSize(this.size + 1);
+		} else if (position >= getSize()) {
+			MyLinkedList<E> node = new MyLinkedList<>();
+			MyLinkedList<E> tempNode = head;
+			node.setData(e);
+			
+			while (null != tempNode.getNext()) {
+				tempNode = tempNode.getNext();
+			}
+			
+			tempNode.setNext(node);
+			tail = node;
+			setSize(this.size + 1);
 		}
+		return true;
+	}
+	
+	public E get(int position) {
+		if (null == head) {
+			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		}
+		MyLinkedList<E> tempNode = head;
+		int count = 0;
+		
+		while (null != tempNode) {
+			if (count == position) {
+				return tempNode.getData();
+			}
+			tempNode = tempNode.getNext();
+			count++;
+		}
+		throw new IndexOutOfBoundsException("Index out of range");
+	}
+	
+	public boolean contains(E element) {
+		if (null == head) {
+			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		}
+		MyLinkedList<E> tempNode = head;
+		
+		while (null != tempNode) {
+			if (tempNode.getData().equals(element)) {
+				return true;
+			}
+			tempNode = tempNode.getNext();
+		}
+		return false;
+	}
+	
+	public boolean remove(E element) {
+		
+		if (null == head) {
+			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		}
+		MyLinkedList<E> tempNode = head;
+		MyLinkedList<E> prev = head;
+		int count = 0;
+		
+		while (null != tempNode) {
+			if (tempNode.getData().equals(element)) {
+				if (1 == getSize()) {
+					head = null;
+					tail = null;
+					setSize(0);
+				} else if (0 == count) {
+					head = head.getNext();
+					setSize(getSize() - 1);
+				} else if (getSize() - 1 == count) {
+					prev.setNext(null);
+					tail = prev;
+					setSize(getSize() - 1);
+				} else {
+					prev.setNext(tempNode.getNext());
+					setSize(getSize() - 1);
+				}
+				return true;
+			}
+			
+			prev = tempNode;
+			tempNode = tempNode.getNext();
+			count++;
+		}
+		
+		return false;
+	}
+	
+	public boolean deleteList() {
+		if (null == head) {
+			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		}
+		head = null;
+		tail = null;
 		return true;
 	}
  	

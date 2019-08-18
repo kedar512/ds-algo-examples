@@ -1,16 +1,17 @@
 package com.practice;
 
-import com.ds.impl.MyStack;
+import com.ds.impl.MyLinkedList;
 
 public class DsAlgoPractice {
 	public static void main(String[] args) {
-		MyStack stack = new MyStack(3);
+		MyLinkedList<Integer> list = new MyLinkedList<>();
 		
-		stack.push(20);
-		System.out.println(stack.peek());
-		stack.push(30);
-		System.out.println(stack.peek());
-		stack.pop();
-		System.out.println(stack.peek());
+		list.add(20, 2);
+		System.out.println(list.getSize());
+		list.add(21, 2);
+		System.out.println(list.getSize());
+		list.add(22, 2);
+		System.out.println(list.getSize());
+		System.out.println(list.contains(22));
 	}
 }

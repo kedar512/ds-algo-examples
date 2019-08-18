@@ -1,4 +1,4 @@
-package com.myclass;
+package com.ds.impl;
 
 public class SinglyLinkedListNode {
 	public int data;

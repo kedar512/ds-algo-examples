@@ -9,7 +9,7 @@ public class MyLinkedList<E> {
 	private E data;
 	private int size;
 	private MyLinkedList<E> next;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -56,6 +56,14 @@ public class MyLinkedList<E> {
 			return false;
 		return true;
 	}
+	
+	public MyLinkedList<E> getHead() {
+		return head;
+	}
+
+	public void setHead(MyLinkedList<E> head) {
+		this.head = head;
+	}
 
 	public MyLinkedList<E> getNext() {
 		return next;
@@ -80,16 +88,42 @@ public class MyLinkedList<E> {
 	public void setSize(int size) {
 		this.size = size;
 	}
-
-	public boolean add(E e, int position) {
+	
+	public boolean add(E element) {
 		if (null == head) {
 			head = new MyLinkedList<>();
-			head.setData(e);
+			head.setData(element);
+			tail = head;
+			setSize(this.size + 1);
+		} else {
+			addElementAtEnd(element);
+		}
+		return true;
+	}
+	
+	private void addElementAtEnd(E element) {
+		MyLinkedList<E> node = new MyLinkedList<>();
+		MyLinkedList<E> tempNode = head;
+		node.setData(element);
+		
+		while (null != tempNode.getNext()) {
+			tempNode = tempNode.getNext();
+		}
+		
+		tempNode.setNext(node);
+		tail = node;
+		setSize(this.size + 1);
+	}
+
+	public boolean add(E element, int position) {
+		if (null == head) {
+			head = new MyLinkedList<>();
+			head.setData(element);
 			tail = head;
 			setSize(this.size + 1);
 		} else if (position <= 0) {
 			MyLinkedList<E> node = new MyLinkedList<>();
-			node.setData(e);
+			node.setData(element);
 			
 			if (1 == getSize()) {
 				MyLinkedList<E> tempNode = head;
@@ -103,17 +137,7 @@ public class MyLinkedList<E> {
 			}
 			setSize(this.size + 1);
 		} else if (position >= getSize()) {
-			MyLinkedList<E> node = new MyLinkedList<>();
-			MyLinkedList<E> tempNode = head;
-			node.setData(e);
-			
-			while (null != tempNode.getNext()) {
-				tempNode = tempNode.getNext();
-			}
-			
-			tempNode.setNext(node);
-			tail = node;
-			setSize(this.size + 1);
+			addElementAtEnd(element);
 		}
 		return true;
 	}
@@ -193,6 +217,7 @@ public class MyLinkedList<E> {
 		}
 		head = null;
 		tail = null;
+		setSize(0);
 		return true;
 	}
  	

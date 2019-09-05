@@ -89,8 +89,16 @@ public class MyLinkedList<E> {
 		this.size = size;
 	}
 	
+	public boolean isEmpty() {
+		if (0 == getSize()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public boolean add(E element) {
-		if (null == head) {
+		if (isEmpty()) {
 			head = new MyLinkedList<>();
 			head.setData(element);
 			tail = head;
@@ -116,7 +124,7 @@ public class MyLinkedList<E> {
 	}
 
 	public boolean add(E element, int position) {
-		if (null == head) {
+		if (isEmpty()) {
 			head = new MyLinkedList<>();
 			head.setData(element);
 			tail = head;
@@ -138,12 +146,26 @@ public class MyLinkedList<E> {
 			setSize(this.size + 1);
 		} else if (position >= getSize()) {
 			addElementAtEnd(element);
+		} else {
+			MyLinkedList<E> tempNode = head;
+			int count = 0;
+			MyLinkedList<E> node = new MyLinkedList<>();
+			node.setData(element);
+			
+			while (count != position - 1) {
+				tempNode = tempNode.next;
+				count++;
+			}
+			
+			node.setNext(tempNode.getNext());
+			tempNode.next = node;
+			setSize(this.size + 1);
 		}
 		return true;
 	}
 	
 	public E get(int position) {
-		if (null == head) {
+		if (isEmpty()) {
 			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
 		}
 		MyLinkedList<E> tempNode = head;
@@ -160,7 +182,7 @@ public class MyLinkedList<E> {
 	}
 	
 	public boolean contains(E element) {
-		if (null == head) {
+		if (isEmpty()) {
 			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
 		}
 		MyLinkedList<E> tempNode = head;
@@ -176,7 +198,7 @@ public class MyLinkedList<E> {
 	
 	public boolean remove(E element) {
 		
-		if (null == head) {
+		if (isEmpty()) {
 			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
 		}
 		MyLinkedList<E> tempNode = head;
@@ -211,10 +233,32 @@ public class MyLinkedList<E> {
 		return false;
 	}
 	
-	public boolean deleteList() {
-		if (null == head) {
+	public boolean removeElementAt(int position) {
+		if (isEmpty()) {
 			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		} else if (position <= 0) {
+			head = head.getNext();
+		} else {
+			MyLinkedList<E> tempNode = head;
+			int count = 0;
+			
+			while (count != position - 1) {
+				tempNode = tempNode.next;
+				count++;
+			}
+			
+			if (position >= getSize() - 1) {
+				tempNode.setNext(null);
+				tail = tempNode;
+			} else {
+				tempNode.setNext(tempNode.getNext().getNext());
+			}
 		}
+		setSize(getSize() - 1);
+		return true;
+	}
+	
+	public boolean deleteList() {
 		head = null;
 		tail = null;
 		setSize(0);

@@ -1,11 +1,11 @@
 package com.ds.impl;
 
-import com.ds.exception.StackNotInitializedException;
+import com.ds.exception.QueueNotInitializedException;
 
-public class MyLinkedListStack<E> {
+public class MyLinkedListQueue<E> {
 	private MyLinkedList<E> linkedList;
 	
-	public MyLinkedListStack() {
+	public MyLinkedListQueue() {
 		this.linkedList = new MyLinkedList<>();
 	}
 	
@@ -17,7 +17,7 @@ public class MyLinkedListStack<E> {
 		}
 	}
 	
-	public boolean push(E element) {
+	public boolean add(E element) {
 		if (null == linkedList) {
 			this.linkedList = new MyLinkedList<>();
 		}
@@ -25,21 +25,21 @@ public class MyLinkedListStack<E> {
 		return true;
 	}
 	
-	public E pop() {
+	public E poll() {
 		if (isEmpty()) {
-			throw new StackNotInitializedException("Stack is deleted");
+			throw new QueueNotInitializedException("Queue is deleted");
 		} else {
-			E element = linkedList.get(linkedList.getSize() - 1);
-			linkedList.remove(element);
+			E element = linkedList.get(0);
+			linkedList.removeElementAt(0);
 			return element;
 		}
 	}
 	
 	public E peek() {
 		if (isEmpty()) {
-			throw new StackNotInitializedException("Stack is deleted");
+			throw new QueueNotInitializedException("Queue is deleted");
 		} else {
-			return linkedList.get(linkedList.getSize() - 1);
+			return linkedList.get(0);
 		}
 	}
 	

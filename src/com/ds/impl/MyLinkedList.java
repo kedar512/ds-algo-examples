@@ -105,11 +105,7 @@ public class MyLinkedList<E> {
 	}
 	
 	public boolean isEmpty() {
-		if (0 == getSize()) {
-			return true;
-		} else {
-			return false;
-		}
+		return 0 == getSize();
 	}
 	
 	public boolean add(E element) {

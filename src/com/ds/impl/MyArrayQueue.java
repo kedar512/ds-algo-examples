@@ -1,17 +1,23 @@
 package com.ds.impl;
 
+import java.lang.reflect.Array;
+
 import com.ds.exception.QueueNotInitializedException;
 import com.ds.exception.QueueOverflowException;
 
-public class MyArrayQueue {
-	private Object[] arr;
+public class MyArrayQueue<E> {
+	private E[] arr;
 	private int startOfQueue = -1;
 	private int topOfQueue = -1;
 	private int size = 0;
 	
-	public MyArrayQueue(int size) {
-		arr = new Object[size];
-	}
+	public MyArrayQueue(Class<E> clazz, int size) {
+        // Use Array native method to create array
+        // of a type only known at run time
+        @SuppressWarnings("unchecked")
+        final E[] arr = (E[]) Array.newInstance(clazz, size);
+        this.arr = arr;
+    }
 	
 	public boolean isEmpty() {
 		if (0 == size) {
@@ -29,7 +35,7 @@ public class MyArrayQueue {
 		}
 	}
 	
-	public boolean add(Object o) {
+	public boolean add(E element) {
 		if (null == arr) {
 			throw new QueueNotInitializedException("Queue is deleted");
 		} else if (isFull()) {
@@ -38,26 +44,26 @@ public class MyArrayQueue {
 			if (0 == this.size) {
 				this.topOfQueue = 0;
 				this.startOfQueue = 0;
-				arr[this.startOfQueue] = o;
+				arr[this.startOfQueue] = element;
 			} else if (arr.length - 1 == topOfQueue) {
 				this.topOfQueue = 0;
-				arr[this.topOfQueue] = o;
+				arr[this.topOfQueue] = element;
 			} else {
 				this.topOfQueue++;
-				arr[this.topOfQueue] = o;
+				arr[this.topOfQueue] = element;
 			}
 			this.size++;
 		}
 		return true;
 	}
 	
-	public Object poll() {
+	public E poll() {
 		if (null == arr) {
 			throw new QueueNotInitializedException("Queue is deleted");
 		} else if (isEmpty()) {
 			return null;
 		} else {
-			Object temp = arr[this.startOfQueue];
+			E temp = arr[this.startOfQueue];
 			arr[this.startOfQueue] = null;
 			
 			if (arr.length - 1 == this.startOfQueue) {
@@ -70,7 +76,7 @@ public class MyArrayQueue {
 		}
 	}
 	
-	public Object peek() {
+	public E peek() {
 		if (null == arr) {
 			throw new QueueNotInitializedException("Queue is deleted");
 		} else if (isEmpty()) {

@@ -1,59 +1,57 @@
 package com.ds.impl;
 
+import java.lang.reflect.Array;
+
 import com.ds.exception.StackEmptyException;
 import com.ds.exception.StackNotInitializedException;
 
-public class MyArrayStack {
+public class MyArrayStack<E> {
 	
-	private Object[] arr;
+	private E[] arr;
 	private int topOfStack = -1;
 	
-	public MyArrayStack(int size) {
-		arr = new Object[size];
-	}
+	public MyArrayStack(Class<E> clazz, int size) {
+        // Use Array native method to create array
+        // of a type only known at run time
+        @SuppressWarnings("unchecked")
+        final E[] arr = (E[]) Array.newInstance(clazz, size);
+        this.arr = arr;
+    }
 	
 	public boolean isEmpty() {
-		if (-1 == topOfStack) {
-			return true;
-		} else {
-			return false;
-		}
+		return -1 == topOfStack;
 	}
 	
 	public boolean isFull() {
-		if (arr.length - 1 == topOfStack) {
-			return true;
-		} else {
-			return false;
-		}
+		return arr.length - 1 == topOfStack;		
 	}
 	
-	public boolean push(Object obj) {
+	public boolean push(E element) {
 		if (null == arr) {
 			throw new StackNotInitializedException("Stack is deleted");
 		} else if (isFull()) {
 			throw new StackOverflowError("Stack is full");
 		} else {
 			topOfStack++;
-			arr[topOfStack] = obj;
+			arr[topOfStack] = element;
 			return true;
 		}
 	}
 	
-	public Object pop() {
+	public E pop() {
 		if (null == arr) {
 			throw new StackNotInitializedException("Stack is deleted");
 		} else if (isEmpty()) {
 			throw new StackEmptyException("Stack is empty");
 		} else {
-			Object temp = arr[topOfStack];
+			E temp = arr[topOfStack];
 			arr[topOfStack] = null;
 			topOfStack--;
 			return temp;
 		}
 	}
 	
-	public Object peek() {
+	public E peek() {
 		if (null == arr) {
 			throw new StackNotInitializedException("Stack is deleted");
 		} else if (isEmpty()) {

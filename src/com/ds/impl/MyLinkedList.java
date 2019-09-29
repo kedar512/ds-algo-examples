@@ -10,13 +10,15 @@ public class MyLinkedList<E> {
 	private int size;
 	private MyLinkedList<E> next;
 	private MyLinkedList<E> prev;
-	
+	private int height;
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((head == null) ? 0 : head.hashCode());
+		result = prime * result + height;
 		result = prime * result + ((next == null) ? 0 : next.hashCode());
 		result = prime * result + ((prev == null) ? 0 : prev.hashCode());
 		result = prime * result + size;
@@ -44,6 +46,8 @@ public class MyLinkedList<E> {
 				return false;
 		} else if (!head.equals(other.head))
 			return false;
+		if (height != other.height)
+			return false;
 		if (next == null) {
 			if (other.next != null)
 				return false;
@@ -62,6 +66,14 @@ public class MyLinkedList<E> {
 		} else if (!tail.equals(other.tail))
 			return false;
 		return true;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 	public MyLinkedList<E> getPrev() {

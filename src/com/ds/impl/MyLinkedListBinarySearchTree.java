@@ -1,6 +1,5 @@
 package com.ds.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyLinkedListBinarySearchTree {
@@ -115,7 +114,7 @@ public class MyLinkedListBinarySearchTree {
 					root.setHead(null);
 				}
 			} else {
-				MyLinkedList<Integer> successor = getSuccessor(node);
+				MyLinkedList<Integer> successor = getSuccessor(node.getNext());
 				MyLinkedList<Integer> successorHead = successor.getHead();
 				MyLinkedList<Integer> nodeHead = node.getHead();
 
@@ -178,17 +177,14 @@ public class MyLinkedListBinarySearchTree {
 	}
 	
 	private MyLinkedList<Integer> getSuccessor(MyLinkedList<Integer> node) {
-		List<MyLinkedList<Integer>> nodeList = new ArrayList<>();
-		getInOrderTraversalList(root, nodeList);
-		for (int i = 0; i < nodeList.size(); i++) {
-			if (node.equals(nodeList.get(i))) {
-				return nodeList.get(i + 1);
-			}
+		if (null != node.getPrev()) {
+			return getSuccessor(node.getPrev());
+		} else {
+			return node;
 		}
-		return null;
 	}
 	
-	private void getInOrderTraversalList(MyLinkedList<Integer> node, List<MyLinkedList<Integer>> nodeList) {
+	public void getInOrderTraversalList(MyLinkedList<Integer> node, List<MyLinkedList<Integer>> nodeList) {
 		if (null == node) {
 			return;
 		} else {

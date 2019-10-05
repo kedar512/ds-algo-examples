@@ -1,6 +1,5 @@
 package com.ds.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyLinkedListAvlTree {
@@ -378,17 +377,14 @@ public class MyLinkedListAvlTree {
 	}
 	
 	private MyLinkedList<Integer> getSuccessor(MyLinkedList<Integer> node) {
-		List<MyLinkedList<Integer>> nodeList = new ArrayList<>();
-		getInOrderTraversalList(root, nodeList);
-		for (int i = 0; i < nodeList.size(); i++) {
-			if (node.equals(nodeList.get(i))) {
-				return nodeList.get(i + 1);
-			}
+		if (null != node.getPrev()) {
+			return getSuccessor(node.getPrev());
+		} else {
+			return node;
 		}
-		return null;
 	}
 	
-	private void getInOrderTraversalList(MyLinkedList<Integer> node, List<MyLinkedList<Integer>> nodeList) {
+	public void getInOrderTraversalList(MyLinkedList<Integer> node, List<MyLinkedList<Integer>> nodeList) {
 		if (null == node) {
 			return;
 		} else {

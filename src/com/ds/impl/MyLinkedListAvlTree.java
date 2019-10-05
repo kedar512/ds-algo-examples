@@ -87,7 +87,7 @@ public class MyLinkedListAvlTree {
 					root.setHead(null);
 				}
 			} else {
-				MyLinkedList<Integer> successor = getSuccessor(node);
+				MyLinkedList<Integer> successor = getSuccessor(node.getNext());
 				MyLinkedList<Integer> successorHead = successor.getHead();
 				MyLinkedList<Integer> nodeHead = node.getHead();
 

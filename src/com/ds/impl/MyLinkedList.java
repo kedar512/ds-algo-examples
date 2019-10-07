@@ -68,6 +68,27 @@ public class MyLinkedList<E> {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		if (isEmpty()) {
+			return "[]";
+		}
+		StringBuilder sb = new StringBuilder("[");
+		MyLinkedList<E> tempNode = head;
+		
+		if (head.equals(tail)) {
+			return "[" + head.getData() + "]";
+		}
+		
+		while (!tail.equals(tempNode)) {
+			sb.append(tempNode.getData()).append(" ");
+			tempNode = tempNode.getNext();
+		}
+		sb.append(tail.getData());
+		
+		return sb.append("]").toString();
+	}
+
 	public int getHeight() {
 		return height;
 	}
@@ -218,6 +239,30 @@ public class MyLinkedList<E> {
 			}
 			tempNode = tempNode.getNext();
 			count++;
+		}
+		return null;
+	}
+	
+	public E get(E element) {
+		if (isEmpty()) {
+			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
+		}
+		
+		if (head.getData().equals(element)) {
+			return head.getData();
+		}
+		
+		if (tail.getData().equals(element)) {
+			return tail.getData();
+		}
+			
+		MyLinkedList<E> tempNode = head;
+		
+		while (!tail.equals(tempNode)) {
+			if (tempNode.getData().equals(element)) {
+				return tempNode.getData();
+			}
+			tempNode = tempNode.getNext();
 		}
 		return null;
 	}

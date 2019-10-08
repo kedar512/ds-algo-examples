@@ -23,7 +23,7 @@ public class MyLinkedListTrie<E> {
 				root.getCharNodeList().add(node);
 				tempNode = root;
 			} else if (null != tempNode) {
-				if (null != tempNode.getCharNodeList()) {
+				if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().isEmpty()) {
 					boolean isContain = tempNode.getCharNodeList().contains(node);
 					
 					if (isContain) {
@@ -42,19 +42,28 @@ public class MyLinkedListTrie<E> {
 				} else {
 					isCharAdded = true;
 					connectPrevNodeInSequence(charArr, i, prev, node);
-					MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
-					tempNode.setCharNodeList(charNodeList);
-					tempNode.getCharNodeList().add(node);
+					if (null != tempNode.getCharNodeList()) {
+						tempNode.getCharNodeList().add(node);
+					} else {
+						MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
+						tempNode.setCharNodeList(charNodeList);
+						tempNode.getCharNodeList().add(node);
+					}
 				}
 			} else {
 				isCharAdded = true;
-				connectPrevNodeInSequence(charArr, i, prev, node);
 				tempNode = new TrieNode<>();
-				prev.setNext(tempNode);
-				tempNode.setHead(prev);
 				MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
 				tempNode.setCharNodeList(charNodeList);
 				tempNode.getCharNodeList().add(node);
+				if (null != prev.getCharNodeList() && prev.getCharNodeList().getSize() < 2) {
+					connectPrevNodeInSequence(charArr, i, prev, node);
+					prev.setNext(tempNode);
+					tempNode.setHead(prev);
+				} else {
+					connectPrevNodeInSequence(charArr, i, prev, node);
+					connectPrevNodeInSequence(charArr, i, prev, tempNode);
+				}
 			}
 			prev = tempNode;
 			tempNode = getNextNode(tempNode, node);
@@ -64,8 +73,13 @@ public class MyLinkedListTrie<E> {
 			TrieNode<Character> lastNode = new TrieNode<>();
 			connectPrevNodeInSequence(charArr, charArr.length, prev, lastNode);
 			lastNode.setEndOfString(true);
-			prev.setNext(lastNode);
-			lastNode.setHead(prev);
+			if (null != prev.getCharNodeList() && prev.getCharNodeList().getSize() < 2) {
+				prev.setNext(lastNode);
+				lastNode.setHead(prev);
+			}
+			return true;
+		} else if (null != tempNode && !tempNode.isEndOfString()) {
+			tempNode.setEndOfString(true);
 			return true;
 		} else {
 			return false;
@@ -73,12 +87,19 @@ public class MyLinkedListTrie<E> {
 	}
 	
 	private TrieNode<Character> getNextNode(TrieNode<Character> tempNode, TrieNode<Character> node) {
+		TrieNode<Character> nextNode = null;
 		if (null != tempNode.getCharNodeList() && tempNode.getCharNodeList().getSize() > 1) {
 			TrieNode<Character> currCharNode = tempNode.getCharNodeList().get(node);
-			return currCharNode.getNext();
+			nextNode = currCharNode.getNext();
 		} else {
-			return tempNode.getNext();
+			nextNode = tempNode.getNext();
 		}
+		
+		if (null == nextNode && null != tempNode && null != tempNode.getCharNodeList()) {
+			TrieNode<Character> currCharNode = tempNode.getCharNodeList().get(node);
+			return currCharNode.getNext();
+		}
+		return nextNode;
 	}
 	
 	private void connectPrevNodeInSequence(char[] charArr, int index, TrieNode<Character> prev,
@@ -97,7 +118,6 @@ public class MyLinkedListTrie<E> {
 		
 		TrieNode<Character> tempNode = root;
 		TrieNode<Character> node = null;
-		TrieNode<Character> temp = null;
 		
 		for (char c : s.toCharArray()) {
 			node = new TrieNode<>();
@@ -106,12 +126,7 @@ public class MyLinkedListTrie<E> {
 				return false;
 			}
 			
-			temp = tempNode;
 			tempNode = getNextNode(tempNode, node);
-			if (null == tempNode && null != temp && null != temp.getCharNodeList()) {
-				TrieNode<Character> currCharNode = temp.getCharNodeList().get(node);
-				tempNode = currCharNode.getNext();
-			}
 			
 			if (null == tempNode) {
 				return false;
@@ -163,10 +178,10 @@ public class MyLinkedListTrie<E> {
 		
 		while (count > -1) {
 			if (count < s.length() && !isShiftedToOuterNode) {
-				isShiftedToOuterNode = true;
 				TrieNode<Character> tempCharNode = new TrieNode<>();
 				tempCharNode.setData(charArr[count]);
 				if (outerNode.getCharNodeList().contains(tempCharNode)) {
+					isShiftedToOuterNode = true;
 					tempNode = outerNode;
 					head = outerNode.getHead();
 				}

@@ -1,5 +1,7 @@
 package com.practice.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -21,6 +23,24 @@ public class DsAlgoUtils {
 					count++;
 				}
 			}
+		}
+	}
+	
+	public static void readMultipleArgumentsFromFile() {
+		String file = "src/input.txt";
+		int count = 0;
+		String line;
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			while ((line = reader.readLine()) != null)
+			if (0 == count) {
+				System.out.println("Number of inputs: " + line);
+				count++;
+			} else {
+				// Logic here
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

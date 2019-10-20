@@ -49,6 +49,7 @@ public class MyArrayBinaryMinHeapTree {
 			throw new EmptyTreeException("Tree is empty");
 		}
 		
+		int min = arr[1];
 		arr[1] = arr[lastUpdatedIndex];
 		arr[lastUpdatedIndex] = 0;
 		setSize(this.size - 1);
@@ -57,7 +58,7 @@ public class MyArrayBinaryMinHeapTree {
 		if (getSize() > 1) {
 			heapifyTopToBottom(1);
 		}
-		return arr[1];
+		return min;
 	}
 	
 	private void heapifyBottomToTop(int nodeIndex) {

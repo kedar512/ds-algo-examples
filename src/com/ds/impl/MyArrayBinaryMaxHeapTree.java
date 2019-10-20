@@ -49,6 +49,7 @@ public class MyArrayBinaryMaxHeapTree {
 			throw new EmptyTreeException("Tree is empty");
 		}
 		
+		int max = arr[1];
 		arr[1] = arr[lastUpdatedIndex];
 		arr[lastUpdatedIndex] = 0;
 		setSize(this.size - 1);
@@ -57,7 +58,7 @@ public class MyArrayBinaryMaxHeapTree {
 		if (getSize() > 1) {
 			heapifyTopToBottom(1);
 		}
-		return arr[1];
+		return max;
 	}
 	
 	private void heapifyBottomToTop(int nodeIndex) {

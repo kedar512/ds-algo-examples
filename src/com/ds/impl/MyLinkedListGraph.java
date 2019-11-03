@@ -134,6 +134,36 @@ public class MyLinkedListGraph {
 		}
 		
 		temp.add(vertex);
+		vertex.setArrayIndex(temp.size() - 1);
+	}
+	
+	public boolean connectVerticesForMinSpanningTree(String vertex, String adjacentVertex, int edge) {
+		for (List<Vertex> temp: vertices) {
+			if (vertex.equals(temp.get(0).getName())) {
+				connectAdjacentVertexForMinSpanningTree(temp, adjacentVertex, edge);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void connectAdjacentVertexForMinSpanningTree(List<Vertex> temp, String adjacentVertex, int edge) {
+		Vertex vertex = new Vertex();
+		
+		vertex.setName(adjacentVertex);
+		vertex.setEdge(edge);
+		vertex.setParent(temp.get(0));
+		vertex.setDistance(Integer.MAX_VALUE);
+		
+		for (int i = 0; i < vertices.size(); i++) {
+			if (adjacentVertex.equals(vertices.get(i).get(0).getName())) {
+				vertex.setMainVertexListIndex(i);
+				break;
+			}
+		}
+		
+		temp.add(vertex);
+		vertex.setArrayIndex(temp.size() - 1);
 	}
 	
 }

@@ -1,11 +1,15 @@
 package com.ds.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import com.ds.exception.NegativeWeightCycleException;
 
-public class MyGraphAlgos {
+public class MyGraphAlgos<E> {
 	
 	public void breadthFirstSearch(MyLinkedListGraph graph) {
 		MyLinkedListQueue<Vertex> q = new MyLinkedListQueue<>();
@@ -209,6 +213,34 @@ public class MyGraphAlgos {
 		}
 	}
 	
+	public void kruskalAlgoForMinimumSpanningTree(MyLinkedListGraph graph, MyDisjointSet<String> ds) {
+		List<Vertex> edgeList = addAllEdgesInList(graph);
+		
+		for (Vertex v : edgeList) {
+			Vertex parent = v.getParent();
+			
+			if (!ds.findSet(v.getName()).getElements().get(0).equals(ds.findSet(parent.getName()).getElements().get(0))) {
+				ds.union(v.getName(), parent.getName());
+				int mainVertexListIndex = parent.getArrayIndex();
+				int index = v.getArrayIndex();
+				graph.getVertices().get(mainVertexListIndex).get(index).setDistance(v.getEdge());
+			}
+		}
+	}
+	
+	private List<Vertex> addAllEdgesInList(MyLinkedListGraph graph) {
+		List<Vertex> edgeList = new ArrayList<>();
+		for (List<Vertex> temp : graph.getVertices()) {
+			for (int i = 1; i < temp.size(); i++) {
+				edgeList.add(temp.get(i));
+			}
+		}
+		Collections.sort(edgeList, (v1, v2) -> {
+				return v1.getEdge() - v2.getEdge();
+		});
+		return edgeList;
+	}
+	
 	private int calculateViaVertexIndex(int viaVertexIndex, int currVertexIndex) {
 		if (viaVertexIndex < currVertexIndex) {
 			return viaVertexIndex + 1;
@@ -272,5 +304,20 @@ public class MyGraphAlgos {
 						+ graph.getVertices().get(i).get(j).getDistance());
 			}
 		}
+	}
+	
+	public void printDistancesForMinSpanningTree(MyLinkedListGraph graph) {
+		StringBuilder path = new StringBuilder();
+		Set<Vertex> vertices = new HashSet<>();
+		for (int i = 0; i < graph.getVertices().size(); i++) {
+			String sourceNode = graph.getVertices().get(i).get(0).getName();
+			for (int j = 1; j < graph.getVertices().get(i).size(); j++) {
+				if (Integer.MAX_VALUE != graph.getVertices().get(i).get(j).getDistance()) {
+					vertices.add(graph.getVertices().get(i).get(j));
+				}
+			}
+		}
+		
+		System.out.println(path);
 	}
 }

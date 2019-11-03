@@ -46,6 +46,19 @@ public class MyLinkedListGraph {
 		return true;
 	}
 	
+	public boolean addForAllPairShortestPath(Vertex vertex) {
+		if (null == vertices) {
+			vertices = new ArrayList<>();
+		}
+		
+		vertex.setDistance(0);
+		List<Vertex> temp = new ArrayList<>();
+		temp.add(vertex);
+		vertices.add(temp);
+		temp.get(0).setArrayIndex(vertices.size() - 1);
+		return true;
+	}
+	
 	public boolean connectVertices(String vertex, List<String> adjacentVertices) {
 		for (List<Vertex> temp: vertices) {
 			if (vertex.equals(temp.get(0).getName())) {
@@ -67,23 +80,51 @@ public class MyLinkedListGraph {
 		}
 	}
 	
-	public boolean connectVerticesForSSSP(String vertex, String adjacentVertex, int edge) {
+	public boolean connectVerticesForShortestPath(String vertex, String adjacentVertex, int edge) {
 		for (List<Vertex> temp: vertices) {
 			if (vertex.equals(temp.get(0).getName())) {
-				connectAdjacentVertexForSSSP(temp, adjacentVertex, edge);
+				connectAdjacentVertexForShortestPath(temp, adjacentVertex, edge);
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private void connectAdjacentVertexForSSSP(List<Vertex> temp, String adjacentVertex, int edge) {
+	private void connectAdjacentVertexForShortestPath(List<Vertex> temp, String adjacentVertex, int edge) {
 		Vertex vertex = new Vertex();
 		
 		vertex.setName(adjacentVertex);
 		vertex.setEdge(edge);
 		vertex.setParent(temp.get(0));
 		vertex.setDistance(Integer.MAX_VALUE);
+		
+		for (int i = 0; i < vertices.size(); i++) {
+			if (adjacentVertex.equals(vertices.get(i).get(0).getName())) {
+				vertex.setMainVertexListIndex(i);
+				break;
+			}
+		}
+		
+		temp.add(vertex);
+	}
+	
+	public boolean connectVerticesForAllPairShortestPath(String vertex, String adjacentVertex, int edge) {
+		for (List<Vertex> temp: vertices) {
+			if (vertex.equals(temp.get(0).getName())) {
+				connectAdjacentVertexForAllPairShortestPath(temp, adjacentVertex, edge);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void connectAdjacentVertexForAllPairShortestPath(List<Vertex> temp, String adjacentVertex, int edge) {
+		Vertex vertex = new Vertex();
+		
+		vertex.setName(adjacentVertex);
+		vertex.setEdge(edge);
+		vertex.setParent(temp.get(0));
+		vertex.setDistance(edge);
 		
 		for (int i = 0; i < vertices.size(); i++) {
 			if (adjacentVertex.equals(vertices.get(i).get(0).getName())) {

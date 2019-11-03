@@ -189,6 +189,55 @@ public class MyGraphAlgos {
 		}
 	}
 	
+	public void allPairShortestPathUsingFloydWarshall(MyLinkedListGraph graph) {
+		for (int i = 0; i < graph.getVertices().size(); i++) {
+			for (int j = 0; j < graph.getVertices().size(); j++) {
+				for (int k = 0; k < graph.getVertices().size(); k++) {
+					int viaVertexIndex = calculateViaVertexIndex(i, j);
+					int destVertexIndex = calculateDestinationVertexIndex(k, j, i);
+					int viaVertexDistance = graph.getVertices().get(j).get(viaVertexIndex).getDistance();
+					int destVertexDistance = graph.getVertices().get(i).get(destVertexIndex).getDistance();
+					if (!(viaVertexDistance == Integer.MAX_VALUE || destVertexDistance == Integer.MAX_VALUE)) {
+						int directDistance = graph.getVertices().get(j).get(k).getDistance();
+						if (directDistance > viaVertexDistance + destVertexDistance) {
+							graph.getVertices().get(j).get(k).setDistance(viaVertexDistance + destVertexDistance);
+						}
+					}
+					
+				}
+			}
+		}
+	}
+	
+	private int calculateViaVertexIndex(int viaVertexIndex, int currVertexIndex) {
+		if (viaVertexIndex < currVertexIndex) {
+			return viaVertexIndex + 1;
+		} else if (viaVertexIndex > currVertexIndex) {
+			return viaVertexIndex;
+		}
+		return 0;
+	}
+	
+	private int calculateDestinationVertexIndex(int destVertexIndex, int currVertexIndex, int viaVertexIndex) {
+
+		int seqIndex = 0;
+		if (0 == destVertexIndex) {
+			seqIndex = currVertexIndex;
+		} else if (destVertexIndex <= currVertexIndex) {
+			seqIndex = destVertexIndex - 1;
+		} else {
+			seqIndex = destVertexIndex;
+		}
+		
+		if (viaVertexIndex == seqIndex) {
+			return 0;
+		} else if (seqIndex >= viaVertexIndex) {
+			return seqIndex;
+		} else {
+			return seqIndex + 1;
+		}
+	}
+	
 	public void printPathAndDistanceForGivenVertices(MyLinkedListGraph graph, String source, String destination) {
 		for (List<Vertex> temp : graph.getVertices()) {
 			if (destination.equals(temp.get(0).getName())) {
@@ -213,5 +262,15 @@ public class MyGraphAlgos {
 		
 		System.out.println(path.reverse());
 		System.out.println("Distance: " + vertex.getDistance());
+	}
+	
+	public void printDistancesForAllPairShortestPath(MyLinkedListGraph graph) {
+		for (int i = 0; i < graph.getVertices().size(); i++) {
+			String sourceNode = graph.getVertices().get(i).get(0).getName();
+			for (int j = 0; j < graph.getVertices().get(i).size(); j++) {
+				System.out.println(sourceNode + " to " + graph.getVertices().get(i).get(j).getName() + " --> "
+						+ graph.getVertices().get(i).get(j).getDistance());
+			}
+		}
 	}
 }

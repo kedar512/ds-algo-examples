@@ -216,14 +216,16 @@ public class MyGraphAlgos<E> {
 	public void kruskalAlgoForMinimumSpanningTree(MyLinkedListGraph graph, MyDisjointSet<String> ds) {
 		List<Vertex> edgeList = addAllEdgesInList(graph);
 		
-		for (Vertex v : edgeList) {
-			Vertex parent = v.getParent();
+		for (int i = 0; i < edgeList.size(); i++) {
+			Vertex parent = edgeList.get(i).getParent();
 			
-			if (!ds.findSet(v.getName()).getElements().get(0).equals(ds.findSet(parent.getName()).getElements().get(0))) {
-				ds.union(v.getName(), parent.getName());
+			if (!ds.findSet(edgeList.get(i).getName()).getElements().get(0).equals(ds.findSet(parent.getName()).getElements().get(0))) {
+				ds.union(edgeList.get(i).getName(), parent.getName());
 				int mainVertexListIndex = parent.getArrayIndex();
-				int index = v.getArrayIndex();
-				graph.getVertices().get(mainVertexListIndex).get(index).setDistance(v.getEdge());
+				int index = edgeList.get(i).getArrayIndex();
+				graph.getVertices().get(mainVertexListIndex).get(index).setDistance(edgeList.get(i).getEdge());
+				graph.getVertices().get(edgeList.get(i).getMainVertexListIndex()).get(edgeList.get(i + 1).getArrayIndex())
+						.setDistance(edgeList.get(i).getEdge());
 			}
 		}
 	}
@@ -308,13 +310,117 @@ public class MyGraphAlgos<E> {
 	
 	public void printDistancesForMinSpanningTree(MyLinkedListGraph graph) {
 		StringBuilder path = new StringBuilder();
-		Set<Vertex> vertices = new HashSet<>();
-		for (int i = 0; i < graph.getVertices().size(); i++) {
+		boolean isSourceAdded = false;
+		Set<String> vertices = new HashSet<>();
+		int i = 0;
+		int count = 0;
+		while (count < graph.getVertices().size()) {
+			if (i >= graph.getVertices().size()) {
+				break;
+			}
 			String sourceNode = graph.getVertices().get(i).get(0).getName();
+			boolean isFound = false;
 			for (int j = 1; j < graph.getVertices().get(i).size(); j++) {
-				if (Integer.MAX_VALUE != graph.getVertices().get(i).get(j).getDistance()) {
-					vertices.add(graph.getVertices().get(i).get(j));
+				Vertex temp = graph.getVertices().get(i).get(j);
+				
+				if (vertices.contains(temp.getName())) {
+					continue;
 				}
+				if (Integer.MAX_VALUE != temp.getDistance()) {
+					isFound = true;
+					if (!isSourceAdded) {
+						path.append(sourceNode).append("--").append(temp.getDistance()).append("-->").append(temp.getName());
+						isSourceAdded = true;
+						vertices.add(graph.getVertices().get(i).get(0).getName());
+						vertices.add(temp.getName());
+						i = temp.getMainVertexListIndex();
+						count += 2;
+					} else {
+						path.append("--").append(temp.getDistance()).append("-->").append(temp.getName());
+						vertices.add(temp.getName());
+						i = temp.getMainVertexListIndex();
+						count++;
+					}
+					break;
+				}
+			}
+			if (!isFound) {
+				i++;
+			}
+		}
+		
+		System.out.println(path);
+	}
+	
+	public void primsAlgoForMinimumSpanningTree(MyLinkedListGraph graph) {
+		graph.getVertices().get(0).get(0).setDistance(0);
+		PriorityQueue<Vertex> q = addAllVerticesInPriorityQueue(graph);
+		
+		while (!q.isEmpty()) {
+			Vertex vertex = q.poll();
+			
+			List<Vertex> adjacentVertices = graph.getVertices().get(vertex.getArrayIndex());
+			graph.getVertices().get(vertex.getArrayIndex()).get(0).setVisited(true);
+			
+			for (int i = 1; i < adjacentVertices.size(); i++) {
+				int newDistance = adjacentVertices.get(i).getEdge();
+				int mainVertexListIndex = adjacentVertices.get(i).getMainVertexListIndex();
+				if (!graph.getVertices().get(mainVertexListIndex).get(0).isVisited()
+						&& newDistance < graph.getVertices().get(mainVertexListIndex).get(0).getDistance()) {
+					
+					adjacentVertices.get(i).setDistance(newDistance);
+					adjacentVertices.get(i).setParent(vertex);
+					
+					graph.getVertices().get(mainVertexListIndex).get(0).setDistance(newDistance);
+					graph.getVertices().get(mainVertexListIndex).get(0).setParent(vertex);
+					
+					q.remove(graph.getVertices().get(mainVertexListIndex).get(0));
+					q.add(graph.getVertices().get(mainVertexListIndex).get(0));
+				}
+			}
+		}
+	}
+	
+	public void printDistancesForPrimsMinSpanningTree(MyLinkedListGraph graph) {
+		StringBuilder path = new StringBuilder();
+		boolean isSourceAdded = false;
+		Set<String> vertices = new HashSet<>();
+		int i = 0;
+		int count = 0;
+		while (count < graph.getVertices().size()) {
+			if (i >= graph.getVertices().size()) {
+				break;
+			}
+			String sourceNode = graph.getVertices().get(i).get(0).getName();
+			boolean isFound = false;
+			for (int j = 1; j < graph.getVertices().get(i).size(); j++) {
+				Vertex temp = graph.getVertices().get(i).get(j);
+				Vertex mainVertex = graph.getVertices().get(temp.getMainVertexListIndex()).get(0);
+				Vertex currParent = graph.getVertices().get(i).get(0);
+				if (vertices.contains(temp.getName())
+						|| !mainVertex.getParent().getName().equals(currParent.getName())) {
+					continue;
+				}
+				if (Integer.MAX_VALUE != temp.getDistance()) {
+					isFound = true;
+					if (!isSourceAdded) {
+						path.append(sourceNode).append("--").append(temp.getDistance()).append("-->").append(temp.getName());
+						isSourceAdded = true;
+						vertices.add(graph.getVertices().get(i).get(0).getName());
+						vertices.add(temp.getName());
+						i = temp.getMainVertexListIndex();
+						count += 2;
+					} else {
+						path.append("--").append(temp.getDistance()).append("-->").append(temp.getName());
+						vertices.add(temp.getName());
+						i = temp.getMainVertexListIndex();
+						count++;
+					}
+					break;
+				}
+			}
+			if (!isFound) {
+				i++;
 			}
 		}
 		

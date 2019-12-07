@@ -164,12 +164,12 @@ public class MyDivideAndConquerAlgos {
 		if (s.charAt(startIndex) == s.charAt(endIndex)) {
 			int remaining = endIndex - startIndex - 1;
 			if (remaining == longestPalindromicSubstringRecursive(s, startIndex + 1, endIndex - 1)) {
-				count1 = 2 + longestPalindromicRecursive(s, startIndex + 1, endIndex - 1);
+				count1 = 2 + longestPalindromicSubstringRecursive(s, startIndex + 1, endIndex - 1);
 			}
 		}
 		
-		int count2 = longestPalindromicRecursive(s, startIndex + 1, endIndex);
-		int count3 = longestPalindromicRecursive(s, startIndex, endIndex - 1);
+		int count2 = longestPalindromicSubstringRecursive(s, startIndex + 1, endIndex);
+		int count3 = longestPalindromicSubstringRecursive(s, startIndex, endIndex - 1);
 		
 		return calculateMax(count1, count2, count3);
 				

@@ -1,5 +1,6 @@
 package com.ds.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyDynamicProgrammingAlgos {
@@ -266,5 +267,284 @@ public class MyDynamicProgrammingAlgos {
 			}
 		}
 		return resultArr[0][0];
+	}
+	
+	public static int findLongestPalindromicSubsequenceUsingTopDownApproach(String s) {
+		Integer[][] resultArr = new Integer[s.length()][s.length()];
+		return longestPalindromicRecursiveTopDown(resultArr, s, 0, s.length() - 1);
+	}
+	
+	private static int longestPalindromicRecursiveTopDown(Integer[][] resultArr, String s, int startIndex, int endIndex) {
+		if (startIndex > endIndex) {
+			return 0;
+		}
+		
+		if (startIndex == endIndex) {
+			return 1;
+		}
+		
+		int count1 = 0;
+		
+		if (null == resultArr[startIndex][endIndex]) {
+			if (s.charAt(startIndex) == s.charAt(endIndex)) {
+				count1 = 2 + longestPalindromicRecursiveTopDown(resultArr, s, startIndex + 1, endIndex - 1);
+			}
+			
+			int count2 = longestPalindromicRecursiveTopDown(resultArr, s, startIndex + 1, endIndex);
+			int count3 = longestPalindromicRecursiveTopDown(resultArr, s, startIndex, endIndex - 1);
+			
+			resultArr[startIndex][endIndex] = calculateMax(count1, count2, count3);
+		}
+		
+		return resultArr[startIndex][endIndex];		
+	}
+	
+	public static int findLongestPalindromicSubsequenceUsingBottomUpApproach(String s) {
+		return longestPalindromicRecursiveBottomUp(s);
+	}
+	
+	private static int longestPalindromicRecursiveBottomUp(String s) {
+		int[][] resultArr = new int[s.length()][s.length()];
+		
+		for (int i = s.length() / 2; i >= 0; i--) {
+			for (int j = s.length() / 2; j < s.length(); j++) {
+				if (i == j) {
+					resultArr[i][j] = 1;
+					continue;
+				}
+				int count1 = 0;
+				if (s.charAt(i) == s.charAt(j)) {
+					count1 = 2 + resultArr[i + 1][j - 1];
+				}
+				int count2 = resultArr[i + 1][j];
+				int count3 = resultArr[i][j - 1];
+				resultArr[i][j] = calculateMax(count1, count2, count3);
+			}
+		}
+		return resultArr[0][s.length() - 1];	
+	}
+	
+	public static int findLongestPalindromicSubstringUsingTopDownApproach(String s) {
+		Integer[][] resultArr = new Integer[s.length()][s.length()];
+		return longestPalindromicSubstringRecursiveTopDown(resultArr, s, 0, s.length() - 1);
+	}
+	
+	private static int longestPalindromicSubstringRecursiveTopDown(Integer[][] resultArr, String s, int startIndex, int endIndex) {
+		if (startIndex > endIndex) {
+			return 0;
+		}
+		
+		if (startIndex == endIndex) {
+			return 1;
+		}
+		
+		int count1 = 0;
+		
+		if (null == resultArr[startIndex][endIndex]) {
+			if (s.charAt(startIndex) == s.charAt(endIndex)) {
+				int remaining = endIndex - startIndex - 1;
+				if (remaining == longestPalindromicSubstringRecursiveTopDown(resultArr, s, startIndex + 1, endIndex - 1)) {
+					count1 = 2 + longestPalindromicSubstringRecursiveTopDown(resultArr, s, startIndex + 1, endIndex - 1);
+				}
+			}
+			
+			int count2 = longestPalindromicSubstringRecursiveTopDown(resultArr, s, startIndex + 1, endIndex);
+			int count3 = longestPalindromicSubstringRecursiveTopDown(resultArr, s, startIndex, endIndex - 1);
+			
+			resultArr[startIndex][endIndex] = calculateMax(count1, count2, count3); 
+		}
+		
+		return resultArr[startIndex][endIndex];
+	}
+	
+	public static int findLongestPalindromicSubstringUsingBottomUpApproach(String s) {
+		return longestPalindromicSubstringRecursiveBottomUp(s);
+	}
+	
+	private static int longestPalindromicSubstringRecursiveBottomUp(String s) {
+		int[][] resultArr = new int[s.length()][s.length()];
+		
+		for (int i = s.length() / 2; i >= 0; i--) {
+			for (int j = s.length() / 2; j < s.length(); j++) {
+				if (i == j) {
+					resultArr[i][j] = 1;
+					continue;
+				}
+				int count1 = 0;
+				if (s.charAt(i) == s.charAt(j)) {
+					int remaining = j - i - 1;
+					if (remaining == resultArr[i + 1][j - 1]) {
+						count1 = 2 + resultArr[i + 1][j - 1];
+					}
+				}
+				int count2 = resultArr[i + 1][j];
+				int count3 = resultArr[i][j - 1];
+				resultArr[i][j] = calculateMax(count1, count2, count3);
+			}
+		}
+		return resultArr[0][s.length() - 1];
+	}
+	
+	public static int findMinCostUsingTopDownApproach(int[][] arr) {
+		Integer[][] resultArr = new Integer[arr.length][arr.length];
+		return minCostRecursiveTopDown(resultArr, arr, arr.length - 1, arr.length - 1);
+	}
+	
+	private static int minCostRecursiveTopDown(Integer[][] resultArr, int[][] arr, int row, int col) {
+		if (-1 == row || -1 == col) {
+			return Integer.MAX_VALUE;
+		}
+		
+		if (0 == row && 0 == col) {
+			return arr[0][0];
+		}
+		
+		if (null == resultArr[row][col]) {
+			int minCost1 = minCostRecursiveTopDown(resultArr, arr, row - 1, col);
+			int minCost2 = minCostRecursiveTopDown(resultArr, arr, row, col - 1);
+			
+			int minCost = Math.min(minCost1, minCost2);
+			
+			resultArr[row][col] = minCost + arr[row][col];
+		}
+		
+		return resultArr[row][col];
+	}
+	
+	public static int findMinCostUsingBottomUpApproach(int[][] arr) {
+		return minCostRecursiveBottomUp(arr);
+	}
+	
+	private static int minCostRecursiveBottomUp(int[][] arr) {
+		int[][] resultArr = new int[arr.length][arr.length];
+		
+		for (int i = 0; i < resultArr.length; i++) {
+			for (int j = 0; j < resultArr[i].length; j++) {
+				if (0 == i && 0 == j) {
+					resultArr[i][j] = arr[i][j];
+					continue;
+				}
+				int minCost1 = 0;
+				int minCost2 = 0;
+				if (-1 == i - 1) {
+					minCost1 = Integer.MAX_VALUE;
+				} else {
+					minCost1 = resultArr[i - 1][j];
+				}
+				
+				if (-1 == j - 1) {
+					minCost2 = Integer.MAX_VALUE;
+				} else {
+					minCost2 = resultArr[i][j - 1];
+				}
+				
+				int minCost = Math.min(minCost1, minCost2);
+				
+				resultArr[i][j] = minCost + arr[i][j];	
+			}
+		}
+		return resultArr[resultArr.length - 1][resultArr.length - 1];
+	}
+	
+	public static int findNumberOfPathsForGivenCostUsingTopDownApproach(int[][] arr, int cost) {
+		Integer[][] resultArr = new Integer[arr.length][arr.length];
+		return numberOfPathsRecursiveTopDown(resultArr, arr, cost, arr.length - 1, arr.length - 1);
+	}
+	
+	private static int numberOfPathsRecursiveTopDown(Integer[][] resultArr, int[][] arr, int cost, int row, int col) {
+		if (cost < 0) {
+			return 0;
+		}
+		
+		if (0 == row && 0 == col) {
+			return (arr[0][0] - cost == 0) ? 1 : 0;
+		}
+		
+		if (null == resultArr[row][col]) {
+			if (0 == row) {
+				resultArr[row][col] = numberOfPathsRecursiveTopDown(new Integer[arr.length][arr.length], arr, cost - arr[row][col], 0, col - 1);
+			} else if (0 == col) {
+				resultArr[row][col] = numberOfPathsRecursiveTopDown(new Integer[arr.length][arr.length], arr, cost - arr[row][col], row - 1, 0);
+			} else {
+				int noOfPathsFromPrevRow = numberOfPathsRecursiveTopDown(new Integer[arr.length][arr.length], arr, cost - arr[row][col], row - 1, col);
+				int noOfPathsFromPrevCol = numberOfPathsRecursiveTopDown(new Integer[arr.length][arr.length], arr, cost - arr[row][col], row, col - 1);
+				
+				resultArr[row][col] = noOfPathsFromPrevRow + noOfPathsFromPrevCol;
+			} 
+		}
+		return resultArr[row][col]; 
+	}
+	
+	public static int findNumberOfPathsForGivenCostUsingBottomUpApproach(int[][] arr, int cost) {
+		return numberOfPathsRecursiveBottomUp(arr, cost);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static int numberOfPathsRecursiveBottomUp(int[][] arr, int cost) {
+		int noOfWays = 0;
+		Object[][] rightObjArr = new Object[arr.length][arr.length];
+		Object[][] downObjArr = new Object[arr.length][arr.length];
+		
+		for (int i = arr.length - 1; i >= 0; i--) {
+			for (int j = arr.length - 1; j >= 0; j--) {
+				if (i == arr.length - 1 && j == arr.length - 1) {
+					List<Integer> downList = new ArrayList<>();
+					List<Integer> rightList = new ArrayList<>();
+					downList.add(cost);
+					downObjArr[i][j] = downList;
+					rightObjArr[i][j] = rightList;
+					continue;
+				}
+				
+				if (j < arr.length - 1) {
+					List<Integer> rightList = (List<Integer>) rightObjArr[i][j + 1];
+					List<Integer> downList = (List<Integer>) downObjArr[i][j + 1];
+					List<Integer> currList = createNewList(rightList, downList, arr[i][j + 1]);
+					rightObjArr[i][j] = currList;
+				}
+				
+				if (i < arr.length - 1) {
+					List<Integer> rightList = (List<Integer>) rightObjArr[i + 1][j];
+					List<Integer> downList = (List<Integer>) downObjArr[i + 1][j];
+					List<Integer> currList = createNewList(rightList, downList, arr[i + 1][j]);
+					downObjArr[i][j] = currList;
+				}
+				
+				if (0 == i && 0 == j) {
+					List<Integer> downList = (List<Integer>) downObjArr[i][j];
+					List<Integer> rightList = (List<Integer>) rightObjArr[i][j];
+					
+					for (Integer temp : downList) {
+						if (temp == arr[i][j]) {
+							noOfWays++;
+						}
+					}
+					
+					for (Integer temp : rightList) {
+						if (temp == arr[i][j]) {
+							noOfWays++;
+						}
+					}
+				}
+			}
+		}
+		return noOfWays;
+	}
+	
+	private static List<Integer> createNewList(List<Integer> rightList, List<Integer> downList, int value) {
+		List<Integer> newList = new ArrayList<>();
+		
+		if (null != rightList) {
+			for (Integer i : rightList) {
+				newList.add(i - value);
+			}
+		}
+		
+		if (null != downList) {
+			for (Integer i : downList) {
+				newList.add(i - value);
+			}
+		}
+		return newList;
 	}
 }

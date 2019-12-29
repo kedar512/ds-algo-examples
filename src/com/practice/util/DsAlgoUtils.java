@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -75,6 +77,33 @@ public class DsAlgoUtils {
 		bufferedWriter.newLine();
 		bufferedWriter.close();
 		reader.close();
+	}
+	
+	public static List<Integer> primeFactors(int n) {
+		// Print the number of 2s that divide n
+		List<Integer> factors = new ArrayList<>();
+
+		while (n % 2 == 0) {
+			factors.add(2);
+			n /= 2;
+		}
+
+		// n must be odd at this point. So we can
+		// skip one element (Note i = i +2)
+		for (int i = 3; i <= Math.sqrt(n); i += 2) {
+			// While i divides n, print i and divide n
+			while (n % i == 0) {
+				factors.add(i);
+				n /= i;
+			}
+		}
+
+		// This condition is to handle the case whien
+		// n is a prime number greater than 2
+		if (n > 2) {
+			factors.add(n);
+		}
+		return factors;
 	}
 
 	private static String[] bigSorting(String[] unsorted) {

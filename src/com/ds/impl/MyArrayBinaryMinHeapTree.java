@@ -61,6 +61,29 @@ public class MyArrayBinaryMinHeapTree {
 		return min;
 	}
 	
+	public boolean delete(int element) {
+		if (size > 0) {
+			if (element == arr[1]) {
+				extractMin();
+				return true;
+			}
+			for (int i = 1; i <= size; i++) {
+				if (element == arr[i]) {
+					arr[i] = arr[lastUpdatedIndex];
+					arr[lastUpdatedIndex] = 0;
+					setSize(this.size - 1);
+					lastUpdatedIndex--;
+					
+					if (getSize() > 1) {
+						heapifyTopToBottom(i);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	private void heapifyBottomToTop(int nodeIndex) {
 		
 		if (1 == nodeIndex) {
@@ -90,10 +113,12 @@ public class MyArrayBinaryMinHeapTree {
 		
 		if (leftChildIndex <= lastUpdatedIndex && rightChildIndex <= lastUpdatedIndex) {
 			int smallerChildIndex = arr[leftChildIndex] <= arr[rightChildIndex] ? leftChildIndex : rightChildIndex;
-			int temp = arr[smallerChildIndex];
-			arr[smallerChildIndex] = arr[nodeIndex];
-			arr[nodeIndex] = temp;
-			heapifyTopToBottom(smallerChildIndex);
+			if (arr[smallerChildIndex] < arr[nodeIndex]) {
+				int temp = arr[smallerChildIndex];
+				arr[smallerChildIndex] = arr[nodeIndex];
+				arr[nodeIndex] = temp;
+				heapifyTopToBottom(smallerChildIndex);
+			}
 		} else if (leftChildIndex <= lastUpdatedIndex) {
 			if (arr[leftChildIndex] < arr[nodeIndex]) {
 				int temp = arr[leftChildIndex];

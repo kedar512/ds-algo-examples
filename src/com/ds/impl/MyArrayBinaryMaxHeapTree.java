@@ -90,10 +90,12 @@ public class MyArrayBinaryMaxHeapTree {
 		
 		if (leftChildIndex <= lastUpdatedIndex && rightChildIndex <= lastUpdatedIndex) {
 			int smallerChildIndex = arr[leftChildIndex] >= arr[rightChildIndex] ? leftChildIndex : rightChildIndex;
-			int temp = arr[smallerChildIndex];
-			arr[smallerChildIndex] = arr[nodeIndex];
-			arr[nodeIndex] = temp;
-			heapifyTopToBottom(smallerChildIndex);
+			if (arr[smallerChildIndex] > arr[nodeIndex]) {
+				int temp = arr[smallerChildIndex];
+				arr[smallerChildIndex] = arr[nodeIndex];
+				arr[nodeIndex] = temp;
+				heapifyTopToBottom(smallerChildIndex);
+			}
 		} else if (leftChildIndex <= lastUpdatedIndex) {
 			if (arr[leftChildIndex] > arr[nodeIndex]) {
 				int temp = arr[leftChildIndex];

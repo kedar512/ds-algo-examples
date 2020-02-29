@@ -37,6 +37,7 @@ public class MyLinkedListTrie<E> {
 				parentNode.setCharNodeList(currCharNodeList);
 				prev.setNext(parentNode);
 				parentNode.setHead(prev);
+				node.setHead(prev);
 				prev = node;
 			} else {
 				List<TrieNode<Character>> charNodeList = tempNode.getCharNodeList();
@@ -46,6 +47,7 @@ public class MyLinkedListTrie<E> {
 					List<TrieNode<Character>> currCharNodeList = new ArrayList<>();
 					currCharNodeList.add(node);
 					tempNode.setCharNodeList(currCharNodeList);
+					node.setHead(prev);
 					prev = node;
 					tempNode = node.getNext();
 				} else {
@@ -58,6 +60,7 @@ public class MyLinkedListTrie<E> {
 					} else {
 						isCharAdded = true;
 						charNodeList.add(node);
+						node.setHead(prev);
 						prev = node;
 						tempNode = node.getNext();
 					}
@@ -180,47 +183,19 @@ public class MyLinkedListTrie<E> {
 			return false;
 		}
 		
-		TrieNode<Character> tempNode = root;
-		TrieNode<Character> outerNode = root;
-		TrieNode<Character> node = null;
+		TrieNode<Character> tempNode = null;
 		char[] charArr = s.toCharArray();
 		
-		for (char c : charArr) {
-			node = new TrieNode<>();
-			node.setData(c);
-			if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().contains(node)) {
-				return false;
-			}
-			
-			if (null != outerNode.getNext() && null != outerNode.getNext().getCharNodeList()
-					&& outerNode.getNext().getCharNodeList().contains(node)) {
-				outerNode = outerNode.getNext();
-			}
-			tempNode = getNextNode(tempNode, node);
-			
-			if (null == tempNode) {
-				return false;
-			}
-		}
+		tempNode = getLastNode(s);
 		
-		if (!tempNode.isEndOfString()) {
+		if (null == tempNode) {
 			return false;
 		}
 		
 		TrieNode<Character> head = tempNode.getHead();
 		int count = s.length();
-		boolean isShiftedToOuterNode = false;
 		
 		while (count > -1) {
-			if (count < s.length() && !isShiftedToOuterNode) {
-				TrieNode<Character> tempCharNode = new TrieNode<>();
-				tempCharNode.setData(charArr[count]);
-				if (outerNode.getCharNodeList().contains(tempCharNode)) {
-					isShiftedToOuterNode = true;
-					tempNode = outerNode;
-					head = outerNode.getHead();
-				}
-			}
 			if (null == tempNode.getCharNodeList() || tempNode.getCharNodeList().isEmpty()) {
 				if (null != head) {
 					head.setNext(null);
@@ -239,7 +214,11 @@ public class MyLinkedListTrie<E> {
 				}
 				return true;
 			}
-			tempNode = head;
+			if (null != head && null != head.getHead()) {
+				tempNode = head.getHead().getNext();
+			} else {
+				tempNode = root;
+			}
 			
 			if (null != head) {
 				head = head.getHead();
@@ -248,8 +227,42 @@ public class MyLinkedListTrie<E> {
 			}
 			count--;
 		}
-		 
 		return true;
+	}
+	
+	public TrieNode<Character> getLastNode(String s) {
+		if (null == root) {
+			return null;
+		}
+		
+		TrieNode<Character> tempNode = root;
+		
+		for (char c : s.toCharArray()) {
+			List<TrieNode<Character>> charNodeList = tempNode.getCharNodeList();
+			
+			if (null == charNodeList || charNodeList.isEmpty()) {
+				return null;
+			}
+			
+			TrieNode<Character> currNode = charNodeList.stream().filter(t -> c == t.getData()).findFirst()
+					.orElse(null);
+			
+			if (null == currNode) {
+				return null;
+			}
+			
+			tempNode = currNode.getNext();
+			
+			if (null == tempNode) {
+				return null;
+			}
+		}
+		
+		if (tempNode.isEndOfString()) {
+			return tempNode;
+		} else {
+			return null;
+		}
 	}
 	
 }

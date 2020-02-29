@@ -1,5 +1,8 @@
 package com.ds.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyLinkedListTrie<E> {
 	private TrieNode<Character> root;
 	
@@ -12,73 +15,63 @@ public class MyLinkedListTrie<E> {
 		TrieNode<Character> tempNode = root;
 		TrieNode<Character> prev = null;
 		boolean isCharAdded = false;
+		
 		for(int i = 0; i < charArr.length; i++) {
+			char c = charArr[i];
 			node = new TrieNode<>();
-			node.setData(charArr[i]);
+			node.setData(c);
+			
 			if (null == root) {
 				isCharAdded = true;
 				root = new TrieNode<>();
-				MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
+				List<TrieNode<Character>> charNodeList = new ArrayList<>();
 				root.setCharNodeList(charNodeList);
 				root.getCharNodeList().add(node);
-				tempNode = root;
-			} else if (null != tempNode) {
-				if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().isEmpty()) {
-					boolean isContain = tempNode.getCharNodeList().contains(node);
+				prev = node;
+				tempNode = node.getNext();
+			} else if (null == tempNode) {
+				isCharAdded = true;
+				TrieNode<Character> parentNode = new TrieNode<>();
+				List<TrieNode<Character>> currCharNodeList = new ArrayList<>();
+				currCharNodeList.add(node);
+				parentNode.setCharNodeList(currCharNodeList);
+				prev.setNext(parentNode);
+				parentNode.setHead(prev);
+				prev = node;
+			} else {
+				List<TrieNode<Character>> charNodeList = tempNode.getCharNodeList();
+				
+				if (null == charNodeList || charNodeList.isEmpty()) {
+					isCharAdded = true;
+					List<TrieNode<Character>> currCharNodeList = new ArrayList<>();
+					currCharNodeList.add(node);
+					tempNode.setCharNodeList(currCharNodeList);
+					prev = node;
+					tempNode = node.getNext();
+				} else {
+					TrieNode<Character> currNode = charNodeList.stream().filter(t -> c == t.getData()).findFirst()
+							.orElse(null);
 					
-					if (isContain) {
-						prev = tempNode;
-						tempNode = getNextNode(tempNode, node);
-						continue;
+					if (null != currNode) {
+						prev = currNode;
+						tempNode = currNode.getNext();
 					} else {
 						isCharAdded = true;
-						if (i > 1) {
-							TrieNode<Character> existingNode = tempNode.getCharNodeList()
-									.get(tempNode.getCharNodeList().getSize() - 1);
-							node.setHead(existingNode.getHead());
-						}
-						tempNode.getCharNodeList().add(node);
+						charNodeList.add(node);
+						prev = node;
+						tempNode = node.getNext();
 					}
-				} else {
-					isCharAdded = true;
-					connectPrevNodeInSequence(charArr, i, prev, node);
-					if (null != tempNode.getCharNodeList()) {
-						tempNode.getCharNodeList().add(node);
-					} else {
-						MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
-						tempNode.setCharNodeList(charNodeList);
-						tempNode.getCharNodeList().add(node);
-					}
-				}
-			} else {
-				isCharAdded = true;
-				tempNode = new TrieNode<>();
-				MyLinkedList<TrieNode<Character>> charNodeList = new MyLinkedList<>();
-				tempNode.setCharNodeList(charNodeList);
-				tempNode.getCharNodeList().add(node);
-				if (null != prev.getCharNodeList() && prev.getCharNodeList().getSize() < 2) {
-					connectPrevNodeInSequence(charArr, i, prev, node);
-					prev.setNext(tempNode);
-					tempNode.setHead(prev);
-				} else {
-					connectPrevNodeInSequence(charArr, i, prev, node);
-					connectPrevNodeInSequence(charArr, i, prev, tempNode);
 				}
 			}
-			prev = tempNode;
-			tempNode = getNextNode(tempNode, node);
 		}
 		
 		if (isCharAdded) {
 			TrieNode<Character> lastNode = new TrieNode<>();
-			connectPrevNodeInSequence(charArr, charArr.length, prev, lastNode);
 			lastNode.setEndOfString(true);
-			if (null != prev.getCharNodeList() && prev.getCharNodeList().getSize() < 2) {
-				prev.setNext(lastNode);
-				lastNode.setHead(prev);
-			}
+			prev.setNext(lastNode);
+			lastNode.setHead(prev);
 			return true;
-		} else if (null != tempNode && !tempNode.isEndOfString()) {
+		} else if (!tempNode.isEndOfString()) {
 			tempNode.setEndOfString(true);
 			return true;
 		} else {
@@ -88,27 +81,20 @@ public class MyLinkedListTrie<E> {
 	
 	private TrieNode<Character> getNextNode(TrieNode<Character> tempNode, TrieNode<Character> node) {
 		TrieNode<Character> nextNode = null;
-		if (null != tempNode.getCharNodeList() && tempNode.getCharNodeList().getSize() > 1) {
-			TrieNode<Character> currCharNode = tempNode.getCharNodeList().get(node);
+		if (null != tempNode.getCharNodeList() && tempNode.getCharNodeList().size() > 1) {
+			TrieNode<Character> currCharNode = tempNode.getCharNodeList().stream()
+					.filter(e -> node.getData().equals(e.getData())).findFirst().orElse(new TrieNode<>());
 			nextNode = currCharNode.getNext();
 		} else {
 			nextNode = tempNode.getNext();
 		}
 		
 		if (null == nextNode && null != tempNode && null != tempNode.getCharNodeList()) {
-			TrieNode<Character> currCharNode = tempNode.getCharNodeList().get(node);
+			TrieNode<Character> currCharNode = tempNode.getCharNodeList().stream()
+					.filter(e -> node.getData().equals(e.getData())).findFirst().orElse(new TrieNode<>());
 			return currCharNode.getNext();
 		}
 		return nextNode;
-	}
-	
-	private void connectPrevNodeInSequence(char[] charArr, int index, TrieNode<Character> prev,
-			TrieNode<Character> node) {
-		TrieNode<Character> prevChar = new TrieNode<>();
-		prevChar.setData(charArr[index - 1]);
-		TrieNode<Character> prevCharNode = prev.getCharNodeList().get(prevChar);
-		prevCharNode.setNext(node);
-		node.setHead(prevCharNode);
 	}
 	
 	public boolean search(String s) {
@@ -117,16 +103,22 @@ public class MyLinkedListTrie<E> {
 		}
 		
 		TrieNode<Character> tempNode = root;
-		TrieNode<Character> node = null;
 		
 		for (char c : s.toCharArray()) {
-			node = new TrieNode<>();
-			node.setData(c);
-			if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().contains(node)) {
+			List<TrieNode<Character>> charNodeList = tempNode.getCharNodeList();
+			
+			if (null == charNodeList || charNodeList.isEmpty()) {
 				return false;
 			}
 			
-			tempNode = getNextNode(tempNode, node);
+			TrieNode<Character> currNode = charNodeList.stream().filter(t -> c == t.getData()).findFirst()
+					.orElse(null);
+			
+			if (null == currNode) {
+				return false;
+			}
+			
+			tempNode = currNode.getNext();
 			
 			if (null == tempNode) {
 				return false;
@@ -138,6 +130,49 @@ public class MyLinkedListTrie<E> {
 		} else {
 			return false;
 		}
+	}
+	
+	public int findPartialMatchCount(String s) {
+		if (null == root) {
+			return 0;
+		}
+		
+		TrieNode<Character> tempNode = root;
+		TrieNode<Character> node = null;
+		
+		for (char c : s.toCharArray()) {
+			node = new TrieNode<>();
+			node.setData(c);
+			if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().contains(node)) {
+				return 0;
+			}
+			
+			tempNode = getNextNode(tempNode, node);
+			
+			if (null == tempNode) {
+				return 0;
+			}
+		}
+		List<Integer> countList = new ArrayList<>();
+		countList.add(0);
+		return findRecursiveMatchCount(tempNode, countList);
+	}
+	
+	private int findRecursiveMatchCount(TrieNode<Character> node, List<Integer> countList) {
+		if (null != node.getNext() && node.getNext().isEndOfString()) {
+			Integer count = countList.get(0);
+			countList.remove(0);
+			countList.add(count + 1);
+		}
+		
+		if (null != node.getCharNodeList() && node.getCharNodeList().size() > 1) {
+			for (TrieNode<Character> temp : node.getCharNodeList()) {
+				findRecursiveMatchCount(temp, countList);
+			}
+		} else if (null != node.getNext()) {
+			findRecursiveMatchCount(node.getNext(), countList);
+		}
+		return countList.get(0);
 	}
 	
 	public boolean remove(String s) {
@@ -190,7 +225,7 @@ public class MyLinkedListTrie<E> {
 				if (null != head) {
 					head.setNext(null);
 				}
-			} else if (1 == tempNode.getCharNodeList().getSize() && !tempNode.isEndOfString()) {
+			} else if (1 == tempNode.getCharNodeList().size() && !tempNode.isEndOfString()) {
 				if (null != head) {
 					head.setNext(null);
 				}

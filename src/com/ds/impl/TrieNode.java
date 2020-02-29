@@ -1,12 +1,14 @@
 package com.ds.impl;
 
+import java.util.List;
+
 public class TrieNode<E> {
 	private TrieNode<E> head;
 	private E data;
 	private int size;
 	private TrieNode<E> next;
 	private boolean endOfString;
-	private MyLinkedList<TrieNode<Character>> charNodeList;
+	private List<TrieNode<Character>> charNodeList;
 	
 	@Override
 	public String toString() {
@@ -41,10 +43,10 @@ public class TrieNode<E> {
 			return false;
 		return true;
 	}
-	public MyLinkedList<TrieNode<Character>> getCharNodeList() {
+	public List<TrieNode<Character>> getCharNodeList() {
 		return charNodeList;
 	}
-	public void setCharNodeList(MyLinkedList<TrieNode<Character>> charNodeList) {
+	public void setCharNodeList(List<TrieNode<Character>> charNodeList) {
 		this.charNodeList = charNodeList;
 	}
 	public boolean isEndOfString() {

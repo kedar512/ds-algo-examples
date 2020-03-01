@@ -82,24 +82,6 @@ public class MyLinkedListTrie<E> {
 		}
 	}
 	
-	private TrieNode<Character> getNextNode(TrieNode<Character> tempNode, TrieNode<Character> node) {
-		TrieNode<Character> nextNode = null;
-		if (null != tempNode.getCharNodeList() && tempNode.getCharNodeList().size() > 1) {
-			TrieNode<Character> currCharNode = tempNode.getCharNodeList().stream()
-					.filter(e -> node.getData().equals(e.getData())).findFirst().orElse(new TrieNode<>());
-			nextNode = currCharNode.getNext();
-		} else {
-			nextNode = tempNode.getNext();
-		}
-		
-		if (null == nextNode && null != tempNode && null != tempNode.getCharNodeList()) {
-			TrieNode<Character> currCharNode = tempNode.getCharNodeList().stream()
-					.filter(e -> node.getData().equals(e.getData())).findFirst().orElse(new TrieNode<>());
-			return currCharNode.getNext();
-		}
-		return nextNode;
-	}
-	
 	public boolean search(String s) {
 		if (null == root) {
 			return false;
@@ -133,49 +115,6 @@ public class MyLinkedListTrie<E> {
 		} else {
 			return false;
 		}
-	}
-	
-	public int findPartialMatchCount(String s) {
-		if (null == root) {
-			return 0;
-		}
-		
-		TrieNode<Character> tempNode = root;
-		TrieNode<Character> node = null;
-		
-		for (char c : s.toCharArray()) {
-			node = new TrieNode<>();
-			node.setData(c);
-			if (null != tempNode.getCharNodeList() && !tempNode.getCharNodeList().contains(node)) {
-				return 0;
-			}
-			
-			tempNode = getNextNode(tempNode, node);
-			
-			if (null == tempNode) {
-				return 0;
-			}
-		}
-		List<Integer> countList = new ArrayList<>();
-		countList.add(0);
-		return findRecursiveMatchCount(tempNode, countList);
-	}
-	
-	private int findRecursiveMatchCount(TrieNode<Character> node, List<Integer> countList) {
-		if (null != node.getNext() && node.getNext().isEndOfString()) {
-			Integer count = countList.get(0);
-			countList.remove(0);
-			countList.add(count + 1);
-		}
-		
-		if (null != node.getCharNodeList() && node.getCharNodeList().size() > 1) {
-			for (TrieNode<Character> temp : node.getCharNodeList()) {
-				findRecursiveMatchCount(temp, countList);
-			}
-		} else if (null != node.getNext()) {
-			findRecursiveMatchCount(node.getNext(), countList);
-		}
-		return countList.get(0);
 	}
 	
 	public boolean remove(String s) {

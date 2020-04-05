@@ -121,7 +121,10 @@ public class MyGraphAlgos<E> {
 			List<Vertex> adjacentVertices = graph.getVertices().get(vertex.getArrayIndex());
 			
 			for (int i = 1; i < adjacentVertices.size(); i++) {
-				int newDistance = vertex.getDistance() + adjacentVertices.get(i).getEdge();
+				int newDistance = Integer.MAX_VALUE;
+				if (Integer.MAX_VALUE != vertex.getDistance()) {
+					newDistance = vertex.getDistance() + adjacentVertices.get(i).getEdge();
+				}
 				int mainVertexListIndex = adjacentVertices.get(i).getMainVertexListIndex();
 				if (newDistance < graph.getVertices().get(mainVertexListIndex).get(0).getDistance()) {
 					
@@ -178,11 +181,14 @@ public class MyGraphAlgos<E> {
 		
 		for (List<Vertex> tempList : graph.getVertices()) {
 			Vertex firstVertex = tempList.get(0);
+			if (null == firstVertex.getParent()) {
+				continue;
+			}
 			for (int j = 1; j < tempList.size(); j++) {
 				Vertex tempVertex = tempList.get(j);
 				int mainVertexListIndex = tempList.get(j).getMainVertexListIndex();
 				Vertex secondVertex = graph.getVertices().get(mainVertexListIndex).get(0);
-				
+
 				int newDistance = firstVertex.getDistance() + tempVertex.getEdge();
 				
 				if (newDistance < secondVertex.getDistance()) {
@@ -281,21 +287,29 @@ public class MyGraphAlgos<E> {
 	}
 	
 	private void printPathAndDistance(Vertex vertex, String source) {
-		System.out.print("Path:");
-		StringBuilder path = new StringBuilder();
-		boolean isCompleted = false;
-		Vertex temp = vertex;
-		while (!isCompleted) {
-			path.append(temp.getName()).append(" ");
-			temp = temp.getParent();
-			if (source.equals(temp.getName())) {
-				path.append(temp.getName()).append(" ");
-				isCompleted = true;
-			}
-		}
+		StringBuilder path = new StringBuilder("Path: ");
 		
-		System.out.println(path.reverse());
-		System.out.println("Distance: " + vertex.getDistance());
+		if (null == vertex.getParent()) {
+			path.append(source).append(" --> ").append(vertex.getName()).append(" ").append("Infinity");
+			System.out.println(path);
+			return;
+		} else if (source.equals(vertex.getName())) {
+			path.append(source).append(" --> ").append(vertex.getName()).append(" ").append("0");
+			System.out.println(path);
+			return;
+		}
+		int totalDistance = vertex.getDistance();
+		Vertex temp = vertex;
+		path.append(temp.getName()).append(" ");
+		temp = temp.getParent();
+		
+		while (null != temp) {
+			int distance = totalDistance - temp.getDistance();
+			path.append("<-- ").append(distance).append("-- ").append(temp.getName());
+			temp = temp.getParent();
+			totalDistance = totalDistance - distance;
+		}
+		System.out.println(path);
 	}
 	
 	public void printDistancesForAllPairShortestPath(MyLinkedListGraph graph) {

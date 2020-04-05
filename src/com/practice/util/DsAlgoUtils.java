@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
+import com.ds.impl.MyArrayBinaryMaxHeapTree;
+import com.ds.impl.MyArrayBinaryMinHeapTree;
+import com.ds.impl.MyLinkedListGraph;
+import com.ds.impl.Vertex;
+
 public class DsAlgoUtils {
 
 	public static void readMultipleArgumentsFromStdin() {
@@ -112,5 +117,138 @@ public class DsAlgoUtils {
 
 	public static Integer findMaxInt(Stack<Integer> stack) {
 		return stack.stream().max(Integer::compare).get();
+	}
+	
+	static double[] runningMedian(int[] a) {
+		double[] medArr = new double[a.length];
+		MyArrayBinaryMinHeapTree minHeapTree = new MyArrayBinaryMinHeapTree(a.length);
+		MyArrayBinaryMaxHeapTree maxHeapTree = new MyArrayBinaryMaxHeapTree(a.length);
+
+		for (int i = 0; i < a.length; i++) {
+			double med = 0;
+			int size = 0;
+
+			if (1 == minHeapTree.getSize() && 1 == maxHeapTree.getSize()) {
+				if (minHeapTree.peekMin() < maxHeapTree.peekMax()) {
+					int temp = minHeapTree.extractMin();
+					minHeapTree.add(maxHeapTree.extractMax());
+					maxHeapTree.add(temp);
+				}
+			}
+
+			if (minHeapTree.isEmpty()) {
+				minHeapTree.add(a[i]);
+			} else if (maxHeapTree.isEmpty()) {
+				maxHeapTree.add(a[i]);
+			} else if (a[i] <= maxHeapTree.peekMax()) {
+				if (maxHeapTree.getSize() > minHeapTree.getSize()) {
+					minHeapTree.add(maxHeapTree.extractMax());
+				}
+				maxHeapTree.add(a[i]);
+			} else {
+				if (minHeapTree.getSize() > maxHeapTree.getSize()) {
+					if (a[i] >= minHeapTree.peekMin()) {
+						maxHeapTree.add(minHeapTree.extractMin());
+						minHeapTree.add(a[i]);
+					} else {
+						maxHeapTree.add(a[i]);
+					}
+				} else {
+					minHeapTree.add(a[i]);
+				}
+			}
+
+			size = minHeapTree.getSize() + maxHeapTree.getSize();
+			if (maxHeapTree.isEmpty()) {
+				med = a[i];
+			} else if (size % 2 == 0) {
+				int med1 = minHeapTree.peekMin();
+				int med2 = maxHeapTree.peekMax();
+
+				med = (double) (med1 + med2) / 2;
+			} else {
+				if (minHeapTree.getSize() > maxHeapTree.getSize()) {
+					med = minHeapTree.peekMin();
+				} else {
+					med = maxHeapTree.peekMax();
+				}
+			}
+			med = Math.round(med * 10) / 10.0d;
+			medArr[i] = med;
+		}
+
+		return medArr;
+	}
+	
+	public static MyLinkedListGraph getPositiveWeightedSampleGraphForShortestPathAlgo() {
+		MyLinkedListGraph graph = new MyLinkedListGraph(true, true);
+		
+		Vertex v = new Vertex();
+		
+		v.setName("A");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("B");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("C");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("D");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("E");
+		graph.add(v);
+		
+		graph.connectVerticesForShortestPath("A", "C", 6);
+		graph.connectVerticesForShortestPath("A", "D", 6);
+		graph.connectVerticesForShortestPath("B", "A", 3);
+		graph.connectVerticesForShortestPath("C", "D", 2);
+		graph.connectVerticesForShortestPath("D", "B", 1);
+		graph.connectVerticesForShortestPath("D", "C", 1);
+		graph.connectVerticesForShortestPath("E", "B", 4);
+		graph.connectVerticesForShortestPath("E", "D", 2);
+		
+		return graph;
+	}
+	
+	public static MyLinkedListGraph getNegativeWeightedSampleGraphForShortestPathAlgo() {
+		MyLinkedListGraph graph = new MyLinkedListGraph(true, true);
+		
+		Vertex v = new Vertex();
+		
+		v.setName("A");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("B");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("C");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("D");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("E");
+		graph.add(v);
+		
+		graph.connectVerticesForShortestPath("A", "C", 6);
+		graph.connectVerticesForShortestPath("A", "D", -6);
+		graph.connectVerticesForShortestPath("B", "A", 3);
+		graph.connectVerticesForShortestPath("C", "D", 2);
+		graph.connectVerticesForShortestPath("D", "B", 1);
+		graph.connectVerticesForShortestPath("D", "C", 1);
+		graph.connectVerticesForShortestPath("E", "B", 4);
+		graph.connectVerticesForShortestPath("E", "D", 2);
+		
+		return graph;
 	}
 }

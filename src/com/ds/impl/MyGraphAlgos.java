@@ -210,6 +210,10 @@ public class MyGraphAlgos<E> {
 					if (!(viaVertexDistance == Integer.MAX_VALUE || destVertexDistance == Integer.MAX_VALUE)) {
 						int directDistance = graph.getVertices().get(j).get(k).getDistance();
 						if (directDistance > viaVertexDistance + destVertexDistance) {
+							Vertex temp = graph.getVertices().get(i).get(destVertexIndex).getParent();
+							int parentIndex = calculateDestinationVertexIndex(temp.getArrayIndex(), i, j);
+							Vertex newParent = graph.getVertices().get(j).get(parentIndex);
+							graph.getVertices().get(j).get(k).setParent(newParent);
 							graph.getVertices().get(j).get(k).setDistance(viaVertexDistance + destVertexDistance);
 						}
 					}
@@ -286,17 +290,17 @@ public class MyGraphAlgos<E> {
 		}
 	}
 	
-	private void printPathAndDistance(Vertex vertex, String source) {
+	private StringBuilder printPathAndDistance(Vertex vertex, String source) {
 		StringBuilder path = new StringBuilder("Path: ");
 		
 		if (null == vertex.getParent()) {
 			path.append(source).append(" --> ").append(vertex.getName()).append(" ").append("Infinity");
 			System.out.println(path);
-			return;
+			return path;
 		} else if (source.equals(vertex.getName())) {
 			path.append(source).append(" --> ").append(vertex.getName()).append(" ").append("0");
 			System.out.println(path);
-			return;
+			return path;
 		}
 		int totalDistance = vertex.getDistance();
 		Vertex temp = vertex;
@@ -310,6 +314,7 @@ public class MyGraphAlgos<E> {
 			totalDistance = totalDistance - distance;
 		}
 		System.out.println(path);
+		return path;
 	}
 	
 	public void printDistancesForAllPairShortestPath(MyLinkedListGraph graph) {
@@ -318,6 +323,7 @@ public class MyGraphAlgos<E> {
 			for (int j = 0; j < graph.getVertices().get(i).size(); j++) {
 				System.out.println(sourceNode + " to " + graph.getVertices().get(i).get(j).getName() + " --> "
 						+ graph.getVertices().get(i).get(j).getDistance());
+				printPathAndDistance(graph.getVertices().get(i).get(j), sourceNode);
 			}
 		}
 	}

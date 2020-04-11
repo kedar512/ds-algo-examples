@@ -180,7 +180,7 @@ public class DsAlgoUtils {
 		return medArr;
 	}
 	
-	public static MyLinkedListGraph getPositiveWeightedSampleGraphForShortestPathAlgo() {
+	public static MyLinkedListGraph getPositiveWeightedSampleGraphForSingleSourceShortestPathAlgo() {
 		MyLinkedListGraph graph = new MyLinkedListGraph(true, true);
 		
 		Vertex v = new Vertex();
@@ -216,7 +216,43 @@ public class DsAlgoUtils {
 		return graph;
 	}
 	
-	public static MyLinkedListGraph getNegativeWeightedSampleGraphForShortestPathAlgo() {
+	public static MyLinkedListGraph getPositiveWeightedSampleGraphForAllPairShortestPathAlgo() {
+		MyLinkedListGraph graph = new MyLinkedListGraph(true, true);
+		
+		Vertex v = new Vertex();
+		
+		v.setName("A");
+		graph.addForAllPairShortestPath(v);
+		
+		v = new Vertex();
+		v.setName("B");
+		graph.addForAllPairShortestPath(v);
+		
+		v = new Vertex();
+		v.setName("C");
+		graph.addForAllPairShortestPath(v);
+		
+		v = new Vertex();
+		v.setName("D");
+		graph.addForAllPairShortestPath(v);
+		
+		graph.connectVerticesForAllPairShortestPath("A", "B", 8);
+		graph.connectVerticesForAllPairShortestPath("A", "C", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("A", "D", 1);
+		graph.connectVerticesForAllPairShortestPath("B", "A", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("B", "C", 1);
+		graph.connectVerticesForAllPairShortestPath("B", "D", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("C", "A", 4);
+		graph.connectVerticesForAllPairShortestPath("C", "B", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("C", "D", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("D", "A", Integer.MAX_VALUE);
+		graph.connectVerticesForAllPairShortestPath("D", "B", 2);
+		graph.connectVerticesForAllPairShortestPath("D", "C", 9);
+		
+		return graph;
+	}
+	
+	public static MyLinkedListGraph getNegativeWeightedSampleGraphForSingleSourceShortestPathAlgo() {
 		MyLinkedListGraph graph = new MyLinkedListGraph(true, true);
 		
 		Vertex v = new Vertex();

@@ -31,11 +31,11 @@ public class DsAlgoPractice {
 		 * Integer.parseInt(line); count++; } } catch (Exception e) {
 		 * e.printStackTrace(); }
 		 */
-		MyLinkedListGraph ssspGraph = DsAlgoUtils.getNegativeWeightedSampleGraphForShortestPathAlgo();
+		MyLinkedListGraph allPairGraph = DsAlgoUtils.getPositiveWeightedSampleGraphForAllPairShortestPathAlgo();
 		
 		MyGraphAlgos<Vertex> graphAlgos = new MyGraphAlgos<>();
-		graphAlgos.singleSourceShortestPathUsingBellmanFord(ssspGraph, "A");
-		graphAlgos.printPathAndDistanceForGivenVertices(ssspGraph, "A", "B");
+		graphAlgos.allPairShortestPathUsingFloydWarshall(allPairGraph);
+		graphAlgos.printDistancesForAllPairShortestPath(allPairGraph);
 	}
 	
 

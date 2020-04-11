@@ -55,7 +55,7 @@ public class MyLinkedListGraph {
 		List<Vertex> temp = new ArrayList<>();
 		temp.add(vertex);
 		vertices.add(temp);
-		temp.get(0).setArrayIndex(vertices.size() - 1);
+		temp.get(0).setArrayIndex(0);
 		return true;
 	}
 	
@@ -123,7 +123,9 @@ public class MyLinkedListGraph {
 		
 		vertex.setName(adjacentVertex);
 		vertex.setEdge(edge);
-		vertex.setParent(temp.get(0));
+		if (Integer.MAX_VALUE != edge) {
+			vertex.setParent(temp.get(0));
+		}
 		vertex.setDistance(edge);
 		
 		for (int i = 0; i < vertices.size(); i++) {

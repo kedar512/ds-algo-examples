@@ -354,6 +354,8 @@ public class MyGraphAlgos<E> {
 						vertices.add(graph.getVertices().get(i).get(0).getName());
 						vertices.add(temp.getName());
 						i = temp.getMainVertexListIndex();
+						// As source node is also added along with first connecting node
+						// incrementing by 2
 						count += 2;
 					} else {
 						path.append("--").append(temp.getDistance()).append("-->").append(temp.getName());

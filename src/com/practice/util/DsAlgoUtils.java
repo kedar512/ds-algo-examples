@@ -13,6 +13,7 @@ import java.util.Stack;
 
 import com.ds.impl.MyArrayBinaryMaxHeapTree;
 import com.ds.impl.MyArrayBinaryMinHeapTree;
+import com.ds.impl.MyDisjointSet;
 import com.ds.impl.MyLinkedListGraph;
 import com.ds.impl.Vertex;
 
@@ -250,6 +251,104 @@ public class DsAlgoUtils {
 		graph.connectVerticesForAllPairShortestPath("D", "C", 9);
 		
 		return graph;
+	}
+	
+	public static MyLinkedListGraph getPositiveWeightedSampleGraphForMinSpanningTreeAlgo() {
+		MyLinkedListGraph graph = new MyLinkedListGraph(false, true);
+		
+		Vertex v = new Vertex();
+		
+		v.setName("A");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("B");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("C");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("D");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("E");
+		graph.add(v);
+		
+		graph.connectVerticesForMinSpanningTree("A", "B", 15);
+		graph.connectVerticesForMinSpanningTree("A", "C", 20);
+		graph.connectVerticesForMinSpanningTree("B", "A", 15);
+		graph.connectVerticesForMinSpanningTree("B", "C", 13);
+		graph.connectVerticesForMinSpanningTree("B", "D", 5);
+		graph.connectVerticesForMinSpanningTree("C", "A", 20);
+		graph.connectVerticesForMinSpanningTree("C", "B", 13);
+		graph.connectVerticesForMinSpanningTree("C", "D", 10);
+		graph.connectVerticesForMinSpanningTree("C", "E", 6);
+		graph.connectVerticesForMinSpanningTree("D", "B", 5);
+		graph.connectVerticesForMinSpanningTree("D", "C", 10);
+		graph.connectVerticesForMinSpanningTree("D", "E", 8);
+		graph.connectVerticesForMinSpanningTree("E", "C", 6);
+		graph.connectVerticesForMinSpanningTree("E", "D", 8);
+		
+		return graph;
+	}
+	
+	public static MyLinkedListGraph getPositiveWeightedSampleGraphForPrimsMinSpanningTreeAlgo() {
+		MyLinkedListGraph graph = new MyLinkedListGraph(false, true);
+		
+		Vertex v = new Vertex();
+		
+		v.setName("A");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("B");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("C");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("D");
+		graph.add(v);
+		
+		v = new Vertex();
+		v.setName("E");
+		graph.add(v);
+		
+		graph.connectVerticesForMinSpanningTree("A", "B", 10);
+		graph.connectVerticesForMinSpanningTree("A", "C", 20);
+		graph.connectVerticesForMinSpanningTree("B", "A", 10);
+		graph.connectVerticesForMinSpanningTree("B", "C", 30);
+		graph.connectVerticesForMinSpanningTree("B", "D", 5);
+		graph.connectVerticesForMinSpanningTree("C", "A", 20);
+		graph.connectVerticesForMinSpanningTree("C", "B", 30);
+		graph.connectVerticesForMinSpanningTree("C", "D", 15);
+		graph.connectVerticesForMinSpanningTree("C", "E", 6);
+		graph.connectVerticesForMinSpanningTree("D", "B", 5);
+		graph.connectVerticesForMinSpanningTree("D", "C", 15);
+		graph.connectVerticesForMinSpanningTree("D", "E", 8);
+		graph.connectVerticesForMinSpanningTree("E", "C", 6);
+		graph.connectVerticesForMinSpanningTree("E", "D", 8);
+		
+		return graph;
+	}
+	
+	public static MyDisjointSet<String> getDisjointSetForKruskalAlgo() {
+		MyDisjointSet<String> ds = new MyDisjointSet<>();
+		List<String> elements = new ArrayList<>();
+		
+		elements.add("A");
+		elements.add("B");
+		elements.add("C");
+		elements.add("D");
+		elements.add("E");
+		
+		ds.makeSet(elements);
+		return ds;
 	}
 	
 	public static MyLinkedListGraph getNegativeWeightedSampleGraphForSingleSourceShortestPathAlgo() {

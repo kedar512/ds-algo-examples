@@ -40,10 +40,9 @@ public class MyGraphAlgos<E> {
 	public void depthFirstSearch(MyLinkedListGraph graph) {
 		MyLinkedListStack<Vertex> stack = new MyLinkedListStack<>();
 		
-		stack.push(graph.getVertices().get(0).get(0));
-		
 		for (List<Vertex> temp : graph.getVertices()) {
 			if (!temp.get(0).isVisited()) {
+				stack.push(temp.get(0));
 				while (!stack.isEmpty()) {
 					Vertex vertex = stack.pop();
 					

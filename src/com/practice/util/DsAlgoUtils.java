@@ -7,8 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.Stack;
 
 import com.ds.impl.MyArrayBinaryMaxHeapTree;
@@ -384,6 +386,75 @@ public class DsAlgoUtils {
 		graph.connectVerticesForShortestPath("E", "B", 4);
 		graph.connectVerticesForShortestPath("E", "D", 2);
 		
+		return graph;
+	}
+	
+	public static int[][] makeGraph(int noOfNodes, int[][] connArr) {
+		int[][] graph = new int[noOfNodes + 1][noOfNodes + 1];
+		
+		for (int i = 0; i < connArr.length; i++) {
+			int sourceNode = connArr[i][0];
+    		int destNode = connArr[i][1];
+    		
+    		graph[sourceNode][destNode] = 1;
+    		graph[destNode][sourceNode] = 1;
+		}
+		
+		return graph;
+	}
+	
+	public MyLinkedListGraph iterateGraphUsingDFS(int n, int[][] cities) {
+		MyLinkedListGraph graph = new MyLinkedListGraph(true, false);
+		List<Set<Vertex>> connSetList = new ArrayList<>();
+
+		for (int i = 1; i <= n; i++) {
+			Vertex v = new Vertex();
+
+			v.setName(String.valueOf(i));
+			graph.add(v);
+		}
+
+		for (int i = 0; i < cities.length; i++) {
+			int sourceNode = cities[i][0];
+			int destNode = cities[i][1];
+
+			List<Vertex> sourceNodeList = graph.getVertices().get(sourceNode - 1);
+			Vertex destVertex = graph.getVertices().get(destNode - 1).get(0);
+
+			List<Vertex> destNodeList = graph.getVertices().get(destNode - 1);
+			Vertex sourceVertex = graph.getVertices().get(sourceNode - 1).get(0);
+
+			sourceNodeList.add(destVertex);
+			destNodeList.add(sourceVertex);
+		}
+
+		Stack<Vertex> stack = new Stack<>();
+
+		for (List<Vertex> temp : graph.getVertices()) {
+			if (temp.size() <= 1) {
+				continue;
+			}
+			if (!temp.get(0).isVisited()) {
+				stack.push(temp.get(0));
+				Set<Vertex> connNodes = new HashSet<>();
+				connSetList.add(connNodes);
+				while (!stack.isEmpty()) {
+					Vertex vertex = stack.pop();
+
+					if (!vertex.isVisited()) {
+						connSetList.get(connSetList.size() - 1).add(vertex);
+						vertex.setVisited(true);
+						List<Vertex> adjacentVertices = graph.getVertices().get(vertex.getArrayIndex());
+
+						for (int i = 1; i < adjacentVertices.size(); i++) {
+							if (!adjacentVertices.get(i).isVisited()) {
+								stack.push(adjacentVertices.get(i));
+							}
+						}
+					}
+				}
+			}
+		}
 		return graph;
 	}
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.stream.IntStream;
 
 import com.ds.impl.MyLinkedListGraph;
@@ -85,7 +86,7 @@ class DisjointSet {
 }
 
 public class MinSpanningTree {
-	public static void main() throws IOException {
+	public static void kruskalsMain() throws IOException {
 
 		String file = "src/hk_kruskal_mst.txt";
 		boolean isCompleted = false;
@@ -210,5 +211,134 @@ public class MinSpanningTree {
 			}
 		}
 		return totalWeight;
+	}
+	
+	public static void primsMain(String[] args) throws IOException {
+
+		String file = "src/input.txt";
+		boolean isCompleted = false;
+
+		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+			while (!isCompleted) {
+				String[] nm = bufferedReader.readLine().split(" ");
+
+		        int n = Integer.parseInt(nm[0]);
+
+		        int m = Integer.parseInt(nm[1]);
+
+		        int[][] edges = new int[m][3];
+
+		        for (int i = 0; i < m; i++) {
+		            String[] edgesRowItems = bufferedReader.readLine().split(" ");
+
+		            for (int j = 0; j < 3; j++) {
+		                int edgesItem = Integer.parseInt(edgesRowItems[j]);
+		                edges[i][j] = edgesItem;
+		            }
+		        }
+
+		        int start = Integer.parseInt(bufferedReader.readLine());
+
+		        int result = prims(n, edges, start);
+
+		        System.out.println(result);
+				isCompleted = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	static int prims(int n, int[][] edges, int start) {
+		MyLinkedListGraph graph = new MyLinkedListGraph(true, false);
+
+		for (int i = 1; i <= n; i++) {
+			Vertex v = new Vertex();
+
+			v.setName(String.valueOf(i));
+			graph.add(v);
+		}
+		
+		for (int i = 0; i < edges.length; i++) {
+			int sourceNode = edges[i][0];
+			int destNode = edges[i][1];
+			int weight = edges[i][2];
+			
+			Vertex destVertex = new Vertex();
+			Vertex sourceVertex = new Vertex();
+
+			List<Vertex> sourceNodeList = graph.getVertices().get(sourceNode - 1);
+			List<Vertex> destNodeList = graph.getVertices().get(destNode - 1);
+			
+			destVertex.setName(String.valueOf(destNode));
+			destVertex.setEdge(weight);
+			destVertex.setParent(sourceNodeList.get(0));
+			destVertex.setDistance(Integer.MAX_VALUE);
+			destVertex.setMainVertexListIndex(destNodeList.get(0).getArrayIndex());
+			
+			sourceNodeList.add(destVertex);
+			destVertex.setArrayIndex(sourceNodeList.size() - 1);
+			
+			sourceVertex.setName(String.valueOf(sourceNode));
+			sourceVertex.setEdge(weight);
+			sourceVertex.setParent(destNodeList.get(0));
+			sourceVertex.setDistance(Integer.MAX_VALUE);
+			sourceVertex.setMainVertexListIndex(sourceNodeList.get(0).getArrayIndex());
+			
+			destNodeList.add(sourceVertex);
+			sourceVertex.setArrayIndex(destNodeList.size() - 1);
+		}
+		
+		int totalWeight = primsAlgoForMinimumSpanningTree(graph, start);
+		
+		return totalWeight;
+    }
+
+	public static int primsAlgoForMinimumSpanningTree(MyLinkedListGraph graph, int startIndex) {
+		int totalWeight = 0;
+		graph.getVertices().get(startIndex - 1).get(0).setDistance(0);
+		PriorityQueue<Vertex> q = addAllVerticesInPriorityQueue(graph);
+		
+		while (!q.isEmpty()) {
+			Vertex vertex = q.poll();
+			
+			List<Vertex> adjacentVertices = graph.getVertices().get(vertex.getArrayIndex());
+			graph.getVertices().get(vertex.getArrayIndex()).get(0).setVisited(true);
+			
+			for (int i = 1; i < adjacentVertices.size(); i++) {
+				int newDistance = adjacentVertices.get(i).getEdge();
+				int mainVertexListIndex = adjacentVertices.get(i).getMainVertexListIndex();
+				int oldDistance = graph.getVertices().get(mainVertexListIndex).get(0).getDistance();
+				if (!graph.getVertices().get(mainVertexListIndex).get(0).isVisited()
+						&& newDistance < graph.getVertices().get(mainVertexListIndex).get(0).getDistance()) {
+					
+					if (oldDistance != Integer.MAX_VALUE) {
+						totalWeight -= (oldDistance - newDistance);
+					} else {
+						totalWeight += newDistance;
+					}
+					
+					adjacentVertices.get(i).setDistance(newDistance);
+					adjacentVertices.get(i).setParent(vertex);
+					
+					graph.getVertices().get(mainVertexListIndex).get(0).setDistance(newDistance);
+					graph.getVertices().get(mainVertexListIndex).get(0).setParent(vertex);
+					
+					q.remove(graph.getVertices().get(mainVertexListIndex).get(0));
+					q.add(graph.getVertices().get(mainVertexListIndex).get(0));
+				}
+			}
+		}
+		return totalWeight;
+	}
+	
+	static PriorityQueue<Vertex> addAllVerticesInPriorityQueue(MyLinkedListGraph graph) {
+		PriorityQueue<Vertex> q = new PriorityQueue<>(graph.getVertices().size(), (v1, v2) -> {
+				return v1.getDistance() - v2.getDistance();
+		});
+		for (List<Vertex> temp : graph.getVertices()) {
+			q.add(temp.get(0));
+		}
+		return q;
 	}
 }

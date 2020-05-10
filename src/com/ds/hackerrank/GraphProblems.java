@@ -1,4 +1,4 @@
-package com.practice;
+package com.ds.hackerrank;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,93 +12,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import com.ds.hackerrank.FastReader;
-import com.ds.impl.MySet;
 import com.ds.impl.Vertex;
-
-class DisjointSet {
-	List<MySet<Integer>> sets;
-
-	public List<MySet<Integer>> getSets() {
-		return sets;
-	}
-
-	public void setSets(List<MySet<Integer>> sets) {
-		this.sets = sets;
-	}
-	
-	public boolean makeSet(List<Integer> elements) {
-		if (null == sets) {
-			sets = new ArrayList<>();
-		}
-		
-		for (Integer e: elements) {
-			List<Integer> elemList = new ArrayList<>();
-			elemList.add(e);
-			
-			MySet<Integer> set = new MySet<>();
-			
-			set.setElements(elemList);
-			sets.add(set);
-		}
-		return true;
-	}
-	
-	public boolean union(String firstSet, String secondSet) {
-		int firstSetIndex = Integer.parseInt(firstSet);
-		int secondSetIndex = Integer.parseInt(secondSet);
-		
-		MySet<Integer> set1 = sets.get(firstSetIndex - 1);
-		MySet<Integer> set2 = sets.get(secondSetIndex - 1);
-		
-		while (null != set1.getMovedToSet()) {
-			set1 = set1.getMovedToSet();
-		}
-		
-		while (null != set2.getMovedToSet()) {
-			set2 = set2.getMovedToSet();
-		}
-		
-		if (set1.getElements().size() >= set2.getElements().size()) {
-			for (Integer e : set2.getElements()) {
-				if (!set1.getElements().contains(e)) {
-					set1.getElements().add(e);
-				}
-			}
-			set2.setMovedToSet(set1);
-		} else {
-			for (Integer e : set1.getElements()) {
-				if (!set2.getElements().contains(e)) {
-					set2.getElements().add(e);
-				}
-			}
-			set1.setMovedToSet(set2);
-		}
-		return true;
-	}
-	
-	public MySet<Integer> findSet(String element) {
-		
-		MySet<Integer> set = sets.get(Integer.parseInt(element) - 1);
-		
-		while (null != set.getMovedToSet()) {
-			set = set.getMovedToSet();
-		}
-		return set;
-	}
-}
-
-class MyCount {
-	private int count;
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-}
 
 class PathDetails {
 	private int time;
@@ -157,11 +71,12 @@ class PathDetails {
 	}
 }
 
-public class DsAlgoPractice {
+public class GraphProblems {
+	
+	// Solved using bit mask subset and DP
+	public static void synchronousShoppingProblemStart() throws IOException {
 
-	public static void main(String[] args) throws IOException {
-
-		String filePath = "src/input.txt";
+		String filePath = "src/hk_sync_shopping.txt";
 		boolean isCompleted = false;
 		File file = new File(filePath);
 		
@@ -346,5 +261,4 @@ public class DsAlgoPractice {
 	    // kth bit of n is being set by this operation 
 	    return ((1 << k) | n); 
 	}
-
 }

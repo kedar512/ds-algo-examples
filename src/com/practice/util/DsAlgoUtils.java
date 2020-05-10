@@ -457,4 +457,10 @@ public class DsAlgoUtils {
 		}
 		return graph;
 	}
+	
+	// Method to set kth bit in binary representation of number n
+	static int setKthBit(int n, int k) { 
+	    // kth bit of n is being set by this operation 
+	    return ((1 << k) | n); 
+	}
 }

@@ -148,36 +148,6 @@ public class GraphProblems {
 			e.printStackTrace();
 		}
 		 
-
-		
-		/*
-		 * try (BufferedReader bufferedReader = new BufferedReader(new
-		 * FileReader(file))) { while (!isCompleted) { String[] firstMultipleInput =
-		 * bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
-		 * 
-		 * int n = Integer.parseInt(firstMultipleInput[0]);
-		 * 
-		 * int m = Integer.parseInt(firstMultipleInput[1]);
-		 * 
-		 * int k = Integer.parseInt(firstMultipleInput[2]);
-		 * 
-		 * List<String> centers = IntStream.range(0, n).mapToObj(i -> { try { return
-		 * bufferedReader.readLine(); } catch (IOException ex) { throw new
-		 * RuntimeException(ex); } }) .collect(Collectors.toList());
-		 * 
-		 * List<List<Integer>> roads = new ArrayList<>();
-		 * 
-		 * IntStream.range(0, m).forEach(i -> { try { roads.add(
-		 * Stream.of(bufferedReader.readLine().replaceAll("\\s+$", "").split(" "))
-		 * .map(Integer::parseInt) .collect(Collectors.toList()) ); } catch (IOException
-		 * ex) { throw new RuntimeException(ex); } });
-		 * 
-		 * int res = shop(n, k, centers, roads);
-		 * 
-		 * System.out.println(res); System.out.println(); isCompleted = true; } } catch
-		 * (Exception e) { e.printStackTrace(); }
-		 */
-		 
 	}
 	
 	public static int shop(int n, int k, int[] centerBits, Map<Integer, List<PathDetails>> connMap) {
@@ -261,4 +231,150 @@ public class GraphProblems {
 	    // kth bit of n is being set by this operation 
 	    return ((1 << k) | n); 
 	}
+	
+	public static void graphAlgoToCheckAllPossiblePathsMain() throws IOException {
+
+		String filePath = "src/hk_minimum_penalty.txt";
+		boolean isCompleted = false;
+		File file = new File(filePath);
+		
+		try (InputStream in = new FileInputStream(file)) {
+			FastReader reader = new FastReader(in);
+			while (!isCompleted) {
+		        int n = reader.nextInt();
+
+		        int m = reader.nextInt();
+
+		        int[][] edges = new int[m][3];
+		        Map<Integer, List<PathDetails>> connMap = new HashMap<>();
+
+		        for (int i = 0; i < m; i++) {
+		            for (int j = 0; j < 3; j++) {
+		                int edgesItem = reader.nextInt();
+		                edges[i][j] = edgesItem;
+		            }
+		            
+	    			int sourceNode = edges[i][0];
+	    			int destNode = edges[i][1];
+	    			int edge = edges[i][2];
+	    			
+		            List<PathDetails> sourceNodePaths = connMap.get(sourceNode);
+		            List<PathDetails> destNodePaths = connMap.get(destNode);
+		            
+		            PathDetails sourceToDestPath = new PathDetails();
+		            PathDetails destToSourcePath = new PathDetails();
+		            
+		            sourceToDestPath.setDestNode(destNode);
+		            sourceToDestPath.setTime(edge);
+		            
+		            destToSourcePath.setDestNode(sourceNode);
+		            destToSourcePath.setTime(edge);
+		            
+		            if (null == sourceNodePaths) {
+		            	List<PathDetails> paths = new ArrayList<>();
+		            	paths.add(sourceToDestPath);
+		            	connMap.put(sourceNode, paths);
+		            } else {
+		            	sourceNodePaths.add(sourceToDestPath);
+		            }
+		            
+		            if (null == destNodePaths) {
+		            	List<PathDetails> paths = new ArrayList<>();
+		            	paths.add(destToSourcePath);
+		            	connMap.put(destNode, paths);
+		            } else {
+		            	destNodePaths.add(destToSourcePath);
+		            }
+		        }
+
+		        int A = reader.nextInt();
+
+		        int B = reader.nextInt();
+
+		        int result = beautifulPath(n, connMap, A, B);
+
+		        System.out.println(result);
+				isCompleted = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		 
+	}
+	
+	static int beautifulPath(int n, Map<Integer, List<PathDetails>> connMap, int A, int B) {
+		int minPenalty = Integer.MAX_VALUE;
+		int[][] minPenaltyArr = new int[n][1024];
+		boolean[][] visitedArr = new boolean[n][1024];
+		boolean[][] qAddedArr = new boolean[n][1024];
+		int[] nodeMinPenaltyArr = new int[n];
+		
+		for (int i = 0; i < nodeMinPenaltyArr.length; i++) {
+			nodeMinPenaltyArr[i] = Integer.MAX_VALUE;
+		}
+		
+		for (int i = 0; i < minPenaltyArr.length; i++) {
+			for (int j = 0; j < minPenaltyArr[i].length; j++) {
+				minPenaltyArr[i][j] = Integer.MAX_VALUE;
+			}
+		}
+		
+		nodeMinPenaltyArr[A - 1] = 0;
+		
+		PriorityQueue<Vertex> q = new PriorityQueue<>(1000, (v1, v2) ->
+        v1.getMaskedBits() > v2.getMaskedBits() ? 1 : (v2.getMaskedBits() > v1.getMaskedBits() ? -1 : 0));
+        
+        Vertex initialVertex = new Vertex();
+        
+        initialVertex.setMainVertexListIndex(A - 1);
+        initialVertex.setDistance(0);
+        initialVertex.setMaskedBits(0);
+		
+		q.add(initialVertex);
+		
+		while (!q.isEmpty()) {
+			Vertex vertex = q.poll();
+			
+			int nodeIndex = vertex.getMainVertexListIndex();
+			int penalty = vertex.getMaskedBits();
+			int time = vertex.getDistance();
+			List<PathDetails> adjacentVertices = connMap.get(nodeIndex + 1);
+			
+			if (null == adjacentVertices) {
+				continue;
+			}
+			
+			for (PathDetails path : adjacentVertices) {
+				int totalTime = time + path.getTime();
+				int destNodeIndex = path.getDestNode() - 1;
+				int totalPenalty = penalty | path.getTime();
+				
+				if (!visitedArr[destNodeIndex][totalPenalty]) {
+					
+					Vertex toVisit = new Vertex();
+					
+					toVisit.setMainVertexListIndex(destNodeIndex);
+					toVisit.setDistance(totalTime);
+					toVisit.setMaskedBits(totalPenalty);
+					
+					if (!qAddedArr[destNodeIndex][totalPenalty]) {
+						q.add(toVisit);
+						qAddedArr[destNodeIndex][totalPenalty] = true;
+					}
+					
+					if (totalPenalty < nodeMinPenaltyArr[destNodeIndex]) {
+						nodeMinPenaltyArr[destNodeIndex] = totalPenalty;
+					}
+				}
+			}
+			visitedArr[nodeIndex][penalty] = true;
+		}
+		
+		
+		if (minPenalty > nodeMinPenaltyArr[B - 1]) {
+			minPenalty = nodeMinPenaltyArr[B - 1];
+		}
+		
+		return Integer.MAX_VALUE == minPenalty ? -1 : minPenalty;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.InputMismatchException;
 
 public class FastReader {
 
-	private byte[] buf = new byte[1024];
+	private byte[] buf = new byte[2048];
 	private int index;
 	private InputStream in;
 	private int total;

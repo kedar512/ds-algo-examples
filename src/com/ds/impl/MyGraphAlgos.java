@@ -190,7 +190,7 @@ public class MyGraphAlgos<E> {
 
 				int newDistance = firstVertex.getDistance() + tempVertex.getEdge();
 				
-				if (newDistance < secondVertex.getDistance()) {
+				if (newDistance != secondVertex.getDistance()) {
 					// Negative cycle found
 					throw new NegativeWeightCycleException("Negative weight cycle found");
 				}

@@ -5,14 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.ds.hackerrank.FastReader;
+import com.ds.impl.MyIndexedArrayBinaryMinHeapTree;
+import com.ds.impl.MyLinkedListGraph;
 import com.ds.impl.MySet;
 import com.ds.impl.Vertex;
 
@@ -27,14 +26,14 @@ class DisjointSet {
 		this.sets = sets;
 	}
 	
-	public boolean makeSet(List<Integer> elements) {
+	public boolean makeSet(Integer noOfElem) {
 		if (null == sets) {
 			sets = new ArrayList<>();
 		}
 		
-		for (Integer e: elements) {
+		for (int i = 1; i <= noOfElem; i++) {
 			List<Integer> elemList = new ArrayList<>();
-			elemList.add(e);
+			elemList.add(i);
 			
 			MySet<Integer> set = new MySet<>();
 			
@@ -44,12 +43,12 @@ class DisjointSet {
 		return true;
 	}
 	
-	public boolean union(String firstSet, String secondSet) {
-		int firstSetIndex = Integer.parseInt(firstSet);
-		int secondSetIndex = Integer.parseInt(secondSet);
-		
-		MySet<Integer> set1 = sets.get(firstSetIndex - 1);
-		MySet<Integer> set2 = sets.get(secondSetIndex - 1);
+	public boolean union(Integer firstSet, Integer secondSet) {
+		if (firstSet == secondSet) {
+			return true;
+		}
+		MySet<Integer> set1 = sets.get(firstSet - 1);
+		MySet<Integer> set2 = sets.get(secondSet - 1);
 		
 		while (null != set1.getMovedToSet()) {
 			set1 = set1.getMovedToSet();
@@ -57,6 +56,10 @@ class DisjointSet {
 		
 		while (null != set2.getMovedToSet()) {
 			set2 = set2.getMovedToSet();
+		}
+		
+		if (set1.getElements().get(0).equals(set2.getElements().get(0))) {
+			return true;
 		}
 		
 		if (set1.getElements().size() >= set2.getElements().size()) {
@@ -77,14 +80,38 @@ class DisjointSet {
 		return true;
 	}
 	
-	public MySet<Integer> findSet(String element) {
+	public MySet<Integer> findSet(Integer setNo) {
 		
-		MySet<Integer> set = sets.get(Integer.parseInt(element) - 1);
+		MySet<Integer> set = sets.get(setNo - 1);
 		
 		while (null != set.getMovedToSet()) {
 			set = set.getMovedToSet();
 		}
 		return set;
+	}
+}
+
+class Node {
+	private int index;
+	private int parentIndex;
+	private int points;
+	public int getPoints() {
+		return points;
+	}
+	public void setPoints(int points) {
+		this.points = points;
+	}
+	public int getIndex() {
+		return index;
+	}
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	public int getParentIndex() {
+		return parentIndex;
+	}
+	public void setParentIndex(int parentIndex) {
+		this.parentIndex = parentIndex;
 	}
 }
 
@@ -101,7 +128,7 @@ class MyCount {
 }
 
 class PathDetails {
-	private int time;
+	private int cost;
 	private Set<Integer> fishTypes;
 	private int destNode;
 	
@@ -111,7 +138,7 @@ class PathDetails {
 		int result = 1;
 		result = prime * result + destNode;
 		result = prime * result + ((fishTypes == null) ? 0 : fishTypes.hashCode());
-		result = prime * result + time;
+		result = prime * result + cost;
 		return result;
 	}
 	@Override
@@ -130,7 +157,7 @@ class PathDetails {
 				return false;
 		} else if (!fishTypes.equals(other.fishTypes))
 			return false;
-		if (time != other.time)
+		if (cost != other.cost)
 			return false;
 		return true;
 	}
@@ -140,12 +167,12 @@ class PathDetails {
 	public void setDestNode(int destNode) {
 		this.destNode = destNode;
 	}
-	public int getTime() {
-		return time;
+	public int getCost() {
+		return cost;
 	}
-	public void setTime(int time) {
-		this.time = time;
-	}
+	public void setCost(int time) {
+		this.cost = time;
+	}	
 	public Set<Integer> getFishTypes() {
 		if (null == fishTypes) {
 			fishTypes = new HashSet<>();
@@ -160,73 +187,57 @@ class PathDetails {
 public class DsAlgoPractice {
 
 	public static void main(String[] args) throws IOException {
-
 		String filePath = "src/input.txt";
 		boolean isCompleted = false;
 		File file = new File(filePath);
 		
-		
 		try (InputStream in = new FileInputStream(file)) {
 			FastReader reader = new FastReader(in);
 			while (!isCompleted) {
-				int n = reader.nextInt();
+				int gNodes = reader.nextInt();
+		        int gEdges = reader.nextInt();
+		        
+		        MyLinkedListGraph graph = new MyLinkedListGraph(true, false);
 
-		        int m = reader.nextInt();
+		        for (int i = 1; i <= gNodes; i++) {
+	    			Vertex v = new Vertex();
 
-		        int k = reader.nextInt();
+	    			v.setName(String.valueOf(i));
+	    			graph.add(v);
+	    		}
+		        
+		        for (int i = 0; i < gEdges; i++) {
+		        	int sourceNode = reader.nextInt();
+	    			int destNode = reader.nextInt();
+	    			int edge = reader.nextInt();
+		        	
+	    			Vertex destVertex = new Vertex();
+	    			Vertex sourceVertex = new Vertex();
 
-		        int[] centerBits = new int[n];
-
-		        for (int i = 0; i < n; i++) {
-		            int fishTypes = reader.nextInt();
-		            if (fishTypes > 0) {
-		                for (int j = 0; j < fishTypes; j++) {
-		                	int fishType = reader.nextInt();
-		                    centerBits[i] = setKthBit(centerBits[i], fishType - 1);
-		                }
-		            }
+	    			List<Vertex> sourceNodeList = graph.getVertices().get(sourceNode - 1);
+	    			List<Vertex> destNodeList = graph.getVertices().get(destNode - 1);
+	    			
+	    			destVertex.setName(String.valueOf(destNode));
+	    			destVertex.setEdge(edge);
+	    			destVertex.setParent(sourceNodeList.get(0));
+	    			destVertex.setDistance(Integer.MAX_VALUE);
+	    			destVertex.setMainVertexListIndex(destNodeList.get(0).getArrayIndex());
+	    			
+	    			sourceNodeList.add(destVertex);
+	    			destVertex.setArrayIndex(sourceNodeList.size() - 1);
+	    			
+	    			sourceVertex.setName(String.valueOf(sourceNode));
+	    			sourceVertex.setEdge(edge);
+	    			sourceVertex.setParent(destNodeList.get(0));
+	    			sourceVertex.setDistance(Integer.MAX_VALUE);
+	    			sourceVertex.setMainVertexListIndex(sourceNodeList.get(0).getArrayIndex());
+	    			
+	    			destNodeList.add(sourceVertex);
+	    			sourceVertex.setArrayIndex(destNodeList.size() - 1);
 		        }
 		        
-		        Map<Integer, List<PathDetails>> connMap = new HashMap<>();
-
-		        for (int i = 0; i < m; i++) {
-		            int sourceNode = reader.nextInt();
-		            int destNode = reader.nextInt();
-		            int time = reader.nextInt();
-		            
-		            List<PathDetails> sourceNodePaths = connMap.get(sourceNode);
-		            List<PathDetails> destNodePaths = connMap.get(destNode);
-		            
-		            PathDetails sourceToDestPath = new PathDetails();
-		            PathDetails destToSourcePath = new PathDetails();
-		            
-		            sourceToDestPath.setDestNode(destNode);
-		            sourceToDestPath.setTime(time);
-		            
-		            destToSourcePath.setDestNode(sourceNode);
-		            destToSourcePath.setTime(time);
-		            
-		            if (null == sourceNodePaths) {
-		            	List<PathDetails> paths = new ArrayList<>();
-		            	paths.add(sourceToDestPath);
-		            	connMap.put(sourceNode, paths);
-		            } else {
-		            	sourceNodePaths.add(sourceToDestPath);
-		            }
-		            
-		            if (null == destNodePaths) {
-		            	List<PathDetails> paths = new ArrayList<>();
-		            	paths.add(destToSourcePath);
-		            	connMap.put(destNode, paths);
-		            } else {
-		            	destNodePaths.add(destToSourcePath);
-		            }
-
-		        }
-
-		        int res = shop(n, k, centerBits, connMap);
-
-		        System.out.println(res);
+		        getCost(gNodes, graph);
+		        
 				isCompleted = true;
 			}
 		} catch (Exception e) {
@@ -265,86 +276,58 @@ public class DsAlgoPractice {
 		 
 	}
 	
-	public static int shop(int n, int k, int[] centerBits, Map<Integer, List<PathDetails>> connMap) {
-		int minTime = Integer.MAX_VALUE;
-		int[][] minTimeArr = new int[n][(int) Math.pow(2.0, Double.valueOf(String.valueOf(k)))];
-		boolean[][] visitedArr = new boolean[n][(int) Math.pow(2.0, Double.valueOf(String.valueOf(k)))];
-		int allFishTypesBits = 0;
-		
-		for (int i = 0; i < k; i++) {
-			allFishTypesBits = setKthBit(allFishTypesBits, i);
-		}
-		
-		for (int i = 0; i < minTimeArr.length; i++) {
-			for (int j = 0; j < minTimeArr[i].length; j++) {
-				minTimeArr[i][j] = Integer.MAX_VALUE;
-			}
-		}
-		
-		minTimeArr[0][centerBits[0]] = 0;
-        
-        PriorityQueue<Vertex> q = new PriorityQueue<>(1000, (v1, v2) ->
-        v1.getDistance() > v2.getDistance() ? 1 : (v2.getDistance() > v1.getDistance() ? -1 : 0));
-        
-        Vertex initialVertex = new Vertex();
-        
-        initialVertex.setMainVertexListIndex(0);
-        initialVertex.setDistance(0);
-        initialVertex.setMaskedBits(centerBits[0]);
-		
-		q.add(initialVertex);
-		
-		while (!q.isEmpty()) {
-			Vertex vertex = q.poll();
-			
-			int nodeIndex = vertex.getMainVertexListIndex();
-			int fishTypeBits = vertex.getMaskedBits();
-			int time = vertex.getDistance();
-			List<PathDetails> adjacentVertices = connMap.get(nodeIndex + 1);
-			
-			for (PathDetails path : adjacentVertices) {
-				int totalTime = time + path.getTime();
-				int destNodeIndex = path.getDestNode() - 1;
-				int totalFishTypeBits = fishTypeBits | centerBits[destNodeIndex];
-				int currentMinTime = minTimeArr[destNodeIndex][totalFishTypeBits];
-				
-				if (!visitedArr[destNodeIndex][totalFishTypeBits] && totalTime < currentMinTime) {
-					
-					Vertex toVisit = new Vertex();
-					
-					toVisit.setMainVertexListIndex(destNodeIndex);
-					toVisit.setDistance(totalTime);
-					toVisit.setMaskedBits(totalFishTypeBits);
-					
-					q.add(toVisit);
-					minTimeArr[destNodeIndex][totalFishTypeBits] = totalTime;
-				}
-			}
-			visitedArr[nodeIndex][fishTypeBits] = true;
-		}
-		int lastRow = minTimeArr.length - 1;
-		for (int i = 0; i < minTimeArr[lastRow].length; i++) {
-			for (int j = 0; j < minTimeArr[lastRow].length; j++) {
-				int totalFishTypes = i | j;
-				
-				if (allFishTypesBits == totalFishTypes) {
-					int time1 = minTimeArr[lastRow][i];
-					int time2 = minTimeArr[lastRow][j];
-					
-					if (Integer.MAX_VALUE != time1 && Integer.MAX_VALUE != time2) {
-						int maxTime = Math.max(time1, time2);
-						minTime = Math.min(minTime, maxTime);
-					}
-				}
-			}
-		}
-		
-		return minTime;
+	public static void getCost(int gNodes, MyLinkedListGraph graph) {
+	    singleSourceShortestPathUsingDijkstra(graph, 1);
+	    if (Integer.MAX_VALUE != graph.getVertices().get(gNodes - 1).get(0).getDistance()) {
+	    	System.out.println(graph.getVertices().get(gNodes - 1).get(0).getDistance());
+	    } else {
+	    	System.out.println("NO PATH EXISTS");
+	    }
 	}
 	
-	static int setKthBit(int n, int k) { 
-	    // kth bit of n is being set by this operation 
-	    return ((1 << k) | n); 
+	static void singleSourceShortestPathUsingDijkstra(MyLinkedListGraph graph, int startIndex) {
+		graph.getVertices().get(startIndex - 1).get(0).setDistance(0);
+		
+		MyIndexedArrayBinaryMinHeapTree q = addAllVerticesInPriorityQueueTemp(graph);
+		
+		while (!q.isEmpty()) {
+			Vertex vertex = q.extractMin();
+			
+			List<Vertex> adjacentVertices = graph.getVertices().get(vertex.getArrayIndex());
+			
+			for (int i = 1; i < adjacentVertices.size(); i++) {
+				int newDistance = Integer.MAX_VALUE;
+				if (Integer.MAX_VALUE != vertex.getDistance()) {
+					int nodalDistance = adjacentVertices.get(i).getEdge() - vertex.getDistance();
+					
+					if (nodalDistance > 0) {
+						newDistance = vertex.getDistance() + nodalDistance;
+					} else {
+						newDistance = vertex.getDistance();
+					}
+				}
+				int mainVertexListIndex = adjacentVertices.get(i).getMainVertexListIndex();
+				if (newDistance < graph.getVertices().get(mainVertexListIndex).get(0).getDistance()) {
+					
+					adjacentVertices.get(i).setDistance(newDistance);
+					adjacentVertices.get(i).setParent(vertex);
+					
+					graph.getVertices().get(mainVertexListIndex).get(0).setDistance(newDistance);
+					graph.getVertices().get(mainVertexListIndex).get(0).setParent(vertex);
+					
+					q.delete(graph.getVertices().get(mainVertexListIndex).get(0));
+					q.add(graph.getVertices().get(mainVertexListIndex).get(0));
+				}
+			}
+		}
+	}
+	
+	static MyIndexedArrayBinaryMinHeapTree addAllVerticesInPriorityQueueTemp(MyLinkedListGraph graph) {
+		MyIndexedArrayBinaryMinHeapTree q = new MyIndexedArrayBinaryMinHeapTree(graph.getVertices().size());
+		for (List<Vertex> temp : graph.getVertices()) {
+			q.add(temp.get(0));
+		}
+		return q;
 	}
 
 }

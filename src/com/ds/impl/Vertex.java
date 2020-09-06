@@ -13,6 +13,7 @@ public class Vertex {
 	private int mainVertexListIndex;
 	private Set<Integer> dataList;
 	private int maskedBits;
+	private int heapIndex;
 	
 	@Override
 	public int hashCode() {
@@ -22,6 +23,7 @@ public class Vertex {
 		result = prime * result + ((dataList == null) ? 0 : dataList.hashCode());
 		result = prime * result + distance;
 		result = prime * result + edge;
+		result = prime * result + heapIndex;
 		result = prime * result + (isVisited ? 1231 : 1237);
 		result = prime * result + mainVertexListIndex;
 		result = prime * result + maskedBits;
@@ -49,6 +51,8 @@ public class Vertex {
 			return false;
 		if (edge != other.edge)
 			return false;
+		if (heapIndex != other.heapIndex)
+			return false;
 		if (isVisited != other.isVisited)
 			return false;
 		if (mainVertexListIndex != other.mainVertexListIndex)
@@ -66,6 +70,12 @@ public class Vertex {
 		} else if (!parent.equals(other.parent))
 			return false;
 		return true;
+	}
+	public int getHeapIndex() {
+		return heapIndex;
+	}
+	public void setHeapIndex(int heapIndex) {
+		this.heapIndex = heapIndex;
 	}
 	public int getMaskedBits() {
 		return maskedBits;

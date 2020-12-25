@@ -267,6 +267,31 @@ public class MyLinkedList<E> {
 		return null;
 	}
 	
+	// Method to get middle element if size is not known
+	// in a single iteration
+	public E getMiddleElement() {
+		MyLinkedList<E> tempNode = head;
+		MyLinkedList<E> trailingNode = head;
+		
+		int count = 0;
+		int trailingNodeCount = 0;
+		
+		while (null != head) {
+			if (count / 2 > trailingNodeCount) {
+				trailingNode = trailingNode.getNext();
+				trailingNodeCount++;
+			}
+			
+			if (tail.equals(tempNode)) {
+				break;
+			}
+			tempNode = tempNode.getNext();
+			count++;
+		}
+		
+		return null != trailingNode ? trailingNode.getData() : null;
+	}
+	
 	public boolean contains(E element) {
 		if (isEmpty()) {
 			throw new LinkedListNotInitializedException("Linked list is either deleted or not initialized");
